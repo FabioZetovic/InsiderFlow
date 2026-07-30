@@ -1,0 +1,16 @@
+meta {
+  name: Status
+  type: http
+  seq: 1
+}
+get {
+  url: {{baseUrl}}/api/status
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+  test("has totalTrades", function(){ expect(res.getBody().totalTrades).to.be.a("number"); });
+}

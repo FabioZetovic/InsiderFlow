@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Backend tests
+        working-directory: backend
+        run: ./mvnw -B test
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install
+        working-directory: frontend
+        run: npm install
+      - name: Type-check & build
+        working-directory: frontend
+        run: npm run build
+      - name: Dependency audit (high+ severity)
+        working-directory: frontend
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+  api-tests:
+    runs-on: ubuntu-latest
+    needs: [backend]
+    services:
+      mongo:
+        image: mongo:7
+        ports: ['27017:27017']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build backend jar
+        working-directory: backend
+        run: ./mvnw -B package -DskipTests
+      - name: Start backend
+        working-directory: backend
+        env:
+          MONGODB_URI: mongodb://localhost:27017/insiderflow
+          JWT_SECRET: ci-test-secret-key-that-is-long-enough-for-hmac-sha512-signing-in-ci
+          SEC_ENABLED: 'false'
+        run: |
+          nohup java -jar target/*.jar > backend.log 2>&1 &
+          for i in $(seq 1 40); do curl -sf http://localhost:8080/api/auth/login -o /dev/null -X POST -H 'Content-Type: application/json' -d '{}' && break || sleep 3; done
+      - name: Run Bruno API tests
+        working-directory: tests/bruno
+        run: |
+          npm install -g @usebruno/cli
+          bru run --env ci

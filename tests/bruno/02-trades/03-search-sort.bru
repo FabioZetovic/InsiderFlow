@@ -1,0 +1,15 @@
+meta {
+  name: Search + sort
+  type: http
+  seq: 3
+}
+get {
+  url: {{baseUrl}}/api/trades?search=NVDA&sort=amountMid,desc&size=3
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+}

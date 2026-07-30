@@ -1,0 +1,26 @@
+meta {
+  name: Login
+  type: http
+  seq: 2
+}
+post {
+  url: {{baseUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+body:json {
+  {
+    "email": "{{testEmail}}",
+    "password": "{{testPassword}}"
+  }
+}
+script:post-response {
+  if (res.getBody() && res.getBody().token) {
+    bru.setEnvVar("token", res.getBody().token);
+  }
+}
+tests {
+  test("status 200", function() { expect(res.getStatus()).to.equal(200); });
+  test("returns a token", function() { expect(res.getBody().token).to.be.a("string"); });
+  test("returns user", function() { expect(res.getBody().user.email).to.equal(bru.getEnvVar("testEmail")); });
+}

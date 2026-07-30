@@ -1,0 +1,12 @@
+meta {
+  name: Unauthenticated is rejected
+  type: http
+  seq: 1
+}
+get {
+  url: {{baseUrl}}/api/trades?size=1
+  auth: none
+}
+tests {
+  test("returns 401", function(){ expect(res.getStatus()).to.equal(401); });
+}

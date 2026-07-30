@@ -1,0 +1,63 @@
+# One-command startup: docker compose up -d
+# Runs MongoDB + backend + frontend. The senate eFD scraper still runs on the host
+# (needs Chrome): node scripts/senate-efd-scraper.js
+#
+# SECURITY: Mongo is NOT published to the host — it is reachable only by the backend on the
+# internal compose network, and it runs with authentication. Set MONGO_USER / MONGO_PASSWORD
+# (and a strong JWT_SECRET) in a local .env before `up`. A fresh volume initializes the auth
+# user; if you enabled auth on an existing volume, recreate it with `docker compose down -v`.
+services:
+  mongo:
+    image: mongo:7
+    container_name: insiderflow-mongo-compose
+    restart: unless-stopped
+    command: ["mongod", "--auth"]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-insiderflow}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-changeme-in-env}
+    # No host port mapping — internal network only. Uncomment to bind to LOCALHOST ONLY for
+    # admin access (never 0.0.0.0): ports: ["127.0.0.1:27017:27017"]
+    volumes:
+      - insiderflow-mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "-u", "${MONGO_USER:-insiderflow}", "-p", "${MONGO_PASSWORD:-changeme-in-env}", "--authenticationDatabase", "admin", "--eval", "db.runCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: insiderflow-backend
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      MONGODB_URI: mongodb://${MONGO_USER:-insiderflow}:${MONGO_PASSWORD:-changeme-in-env}@mongo:27017/insiderflow?authSource=admin
+      FINNHUB_API_KEY: ${FINNHUB_API_KEY:-}
+      JWT_SECRET: ${JWT_SECRET:-}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+      DEMO_MODE: ${DEMO_MODE:-false}
+      REGISTRATION_ENABLED: ${REGISTRATION_ENABLED:-true}
+      SEC_USER_AGENT: ${SEC_USER_AGENT:-InsiderFlow/1.0 (local)}
+      SENATE_EFD_FILE: /data/senate_efd_transactions.json
+    volumes:
+      - ./data:/data:ro
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+    container_name: insiderflow-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  insiderflow-mongo-data:

@@ -1,0 +1,16 @@
+meta {
+  name: Auth config
+  type: http
+  seq: 0
+}
+get {
+  url: {{baseUrl}}/api/auth/config
+  auth: none
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+  test("has demoMode + registrationEnabled booleans", function(){
+    expect(res.getBody().demoMode).to.be.a("boolean");
+    expect(res.getBody().registrationEnabled).to.be.a("boolean");
+  });
+}

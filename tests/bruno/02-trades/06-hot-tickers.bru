@@ -1,0 +1,16 @@
+meta {
+  name: Hot tickers
+  type: http
+  seq: 6
+}
+get {
+  url: {{baseUrl}}/api/trades/hot-tickers
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+  test("array", function(){ expect(res.getBody()).to.be.an("array"); });
+}

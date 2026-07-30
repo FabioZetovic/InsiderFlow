@@ -1,0 +1,16 @@
+meta {
+  name: Leaderboard
+  type: http
+  seq: 11
+}
+get {
+  url: {{baseUrl}}/api/trades/leaderboard
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+  test("has entries array", function(){ expect(res.getBody().entries).to.be.an("array"); });
+}

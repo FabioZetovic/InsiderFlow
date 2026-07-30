@@ -1,0 +1,16 @@
+meta {
+  name: Spotlight
+  type: http
+  seq: 7
+}
+get {
+  url: {{baseUrl}}/api/trades/spotlight
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+  test("has Pelosi and Trump", function(){ const names = res.getBody().map(m=>m.name); expect(names).to.include("Nancy Pelosi"); expect(names).to.include("Donald Trump"); });
+}

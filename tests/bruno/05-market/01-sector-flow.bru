@@ -1,0 +1,16 @@
+meta {
+  name: Sector flow
+  type: http
+  seq: 1
+}
+get {
+  url: {{baseUrl}}/api/market/sector-flow
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+  test("array", function(){ expect(res.getBody()).to.be.an("array"); });
+}

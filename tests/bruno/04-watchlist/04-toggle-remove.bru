@@ -1,0 +1,19 @@
+meta {
+  name: Toggle remove ticker (cleanup)
+  type: http
+  seq: 4
+}
+post {
+  url: {{baseUrl}}/api/watchlist/toggle
+  body: json
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+body:json {
+  { "type": "ticker", "value": "NVDA" }
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+}

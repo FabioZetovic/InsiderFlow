@@ -1,0 +1,16 @@
+meta {
+  name: Members
+  type: http
+  seq: 4
+}
+get {
+  url: {{baseUrl}}/api/trades/members
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+  test("non-empty array", function(){ expect(res.getBody()).to.be.an("array"); expect(res.getBody().length).to.be.above(0); });
+}

@@ -1,0 +1,12 @@
+{
+  "name": "insiderflow-scripts",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Senate eFD scraper — feeds backend/../data/senate_efd_transactions.json",
+  "scripts": {
+    "scrape": "node senate-efd-scraper.js"
+  },
+  "dependencies": {
+    "puppeteer-core": "^24.0.0"
+  }
+}

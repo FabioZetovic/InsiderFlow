@@ -1,0 +1,16 @@
+meta {
+  name: Member summary
+  type: http
+  seq: 8
+}
+get {
+  url: {{baseUrl}}/api/trades/members/Nancy%20Pelosi/summary
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+  test("has trade count", function(){ expect(res.getBody().tradeCount).to.be.a("number"); });
+}

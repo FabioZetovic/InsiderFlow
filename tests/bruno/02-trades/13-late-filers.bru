@@ -1,0 +1,16 @@
+meta {
+  name: Late filers
+  type: http
+  seq: 13
+}
+get {
+  url: {{baseUrl}}/api/trades/late-filers
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+  test("array", function(){ expect(res.getBody()).to.be.an("array"); });
+}

@@ -1,0 +1,16 @@
+meta {
+  name: Get watchlist
+  type: http
+  seq: 1
+}
+get {
+  url: {{baseUrl}}/api/watchlist
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+  test("has members/tickers arrays", function(){ expect(res.getBody().members).to.be.an("array"); expect(res.getBody().tickers).to.be.an("array"); });
+}

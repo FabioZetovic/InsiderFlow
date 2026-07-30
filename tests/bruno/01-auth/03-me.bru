@@ -1,0 +1,16 @@
+meta {
+  name: Me
+  type: http
+  seq: 3
+}
+get {
+  url: {{baseUrl}}/api/auth/me
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function() { expect(res.getStatus()).to.equal(200); });
+  test("is the logged-in user", function() { expect(res.getBody().email).to.equal(bru.getEnvVar("testEmail")); });
+}

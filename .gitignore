@@ -1,0 +1,38 @@
+# Dependencies / build output
+node_modules/
+dist/
+build/
+target/
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# Secrets & local env — NEVER commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.*
+
+# Logs & temp
+*.log
+logs/
+*.tmp
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+
+# Mongo / local data dumps (keep the scraped senate file, it's public and needed)
+/backend/mongo-data/
+
+# Local editor / tooling config (not part of the app)
+.claude/
+CLAUDE.md
+AGENTS.md
+
+# Local planning drafts — keep local, do not publish
+docs/*_PLAN.md

@@ -1,0 +1,16 @@
+meta {
+  name: Compare members
+  type: http
+  seq: 15
+}
+get {
+  url: {{baseUrl}}/api/trades/compare?members=Nancy%20Pelosi&members=Donald%20Trump
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+  test("two members", function(){ expect(res.getBody().members.length).to.be.above(0); });
+}

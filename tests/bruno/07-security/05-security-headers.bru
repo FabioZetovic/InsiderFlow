@@ -1,0 +1,16 @@
+meta {
+  name: Security headers present
+  type: http
+  seq: 5
+}
+get {
+  url: {{baseUrl}}/api/status
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("nosniff", function(){ expect(res.getHeader("x-content-type-options")).to.equal("nosniff"); });
+  test("frame deny", function(){ expect(res.getHeader("x-frame-options")).to.equal("DENY"); });
+}

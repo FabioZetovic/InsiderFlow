@@ -1,0 +1,16 @@
+meta {
+  name: Watchlist feed
+  type: http
+  seq: 3
+}
+get {
+  url: {{baseUrl}}/api/watchlist/feed?size=10
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+  test("content is array", function(){ expect(res.getBody().content).to.be.an("array"); });
+}

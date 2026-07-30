@@ -1,0 +1,17 @@
+meta {
+  name: Ticker detail
+  type: http
+  seq: 10
+}
+get {
+  url: {{baseUrl}}/api/trades/ticker/NVDA
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+tests {
+  test("status 200", function(){ expect(res.getStatus()).to.equal(200); });
+  test("ticker is NVDA", function(){ expect(res.getBody().ticker).to.equal("NVDA"); });
+  test("has price history", function(){ expect(res.getBody().priceHistory).to.be.an("array"); });
+}
