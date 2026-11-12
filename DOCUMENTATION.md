@@ -177,6 +177,10 @@ Environment: no system Maven (wrapper used), Java 26 JDK (targets 17), Node 22, 
 
 ## Changelog
 
+### 2026-11-12 — Latest filings redesign
+- `DigestPanel` now opens with a KPI strip (new trades, buys, sells and est. volume, all counting up) plus an animated buy/sell balance bar and a live "since" pulse.
+- Biggest trades show a buy/sell accent bar, ticker, side and member. Most traded tickers are ranked with sector, volume and a proportional buy/sell split bar. Most active members get party-tinted initials avatars and a relative-volume bar. Bars grow in (`.bar-grow`).
+
 ### 2026-11-12 — Hero, footer and finishing touches
 - **Insiders hero** (`components/Hero.tsx`): headline, short pitch, live counts (trades tracked from `/api/status`, members, sectors) that count up, two calls to action, and an animated SVG illustration (Capitol line art, growing volume bars, a trend line that draws up to an amber arrow).
 - **`CountUp`** (`ui.tsx`): eased number animation, also used for the member, ticker and spotlight buy/sell/trade counts.

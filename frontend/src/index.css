@@ -145,6 +145,10 @@ button { transition: transform 0.12s ease, color 0.2s, background-color 0.2s, op
 .hero-arrow { animation-delay: 1.8s; }
 .hero-pulse { animation: pulse-soft 6s ease-in-out infinite; }
 
+/* Data bars grow in from the left */
+@keyframes grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.bar-grow { transform-origin: left; animation: grow-x 0.9s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
 /* Hide scrollbars on horizontally scrolling rows (nav on mobile) */
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
