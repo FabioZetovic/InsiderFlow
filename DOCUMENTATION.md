@@ -177,6 +177,13 @@ Environment: no system Maven (wrapper used), Java 26 JDK (targets 17), Node 22, 
 
 ## Changelog
 
+### 2026-11-12 — Visual redesign: color system
+- **Design tokens** in `frontend/src/index.css` (`@theme`): `ink` navy-slate neutrals; **primary `brand` indigo** (`#5b57e8`/`#7472f8`) for nav, buttons, links, focus and the logo; **secondary cyan** (`#22b5d2`) for informational tags (earnings, exchanges, BMO); **accent amber** (`#e9a323`) for highlights (hot tickers, LATE flags, warnings); semantic **`up`/`down`** green/red for buys/gains and sells/losses only.
+- Branding no longer shares green with "buy". Party colors (D blue, R red) are unchanged; Independent is neutral now that violet is gone.
+- Recharts colors (axes, grids, tooltips, pie palettes) use the same tokens. Inter and JetBrains Mono load from Google Fonts. Numbers use tabular figures. The header, nav and cards were refined.
+- Added `react-is` as an explicit dependency (recharts peer dependency). It was missing from the lockfile, and the build failed without it when `legacy-peer-deps` was on.
+- `.gitignore` and `.env.example` files are no longer tracked (kept locally).
+
 ### 2026-07-22 — Security hardening + Bruno API tests + deploy readiness
 Full remediation of the security audit ([docs/SECURITY-AUDIT.md](docs/SECURITY-AUDIT.md)) — all Critical/High findings fixed, verified live, and covered by tests.
 - **MongoDB locked down** (C1): compose runs `mongod --auth` with creds from `.env`, host port removed (internal-only). Verified external `ECONNREFUSED`.

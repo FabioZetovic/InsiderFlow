@@ -31,7 +31,7 @@ export function SectorWeeklyStrip({ sectors, loading }: { sectors: SectorWeekly[
 
   return (
     <div>
-      <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+      <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-ink-500">
         Sector performance — last trading week
       </div>
       <div className="flex gap-2 overflow-x-auto pb-1">
@@ -44,15 +44,15 @@ export function SectorWeeklyStrip({ sectors, loading }: { sectors: SectorWeekly[
               title={`${s.symbol}: $${s.weekAgoClose.toFixed(2)} → $${s.lastClose.toFixed(2)} (click for congress trades in ${s.name})`}
               className={`shrink-0 rounded-md border px-3 py-2 text-left transition-colors hover:brightness-125 ${
                 up
-                  ? 'border-emerald-500/30 bg-emerald-500/10'
-                  : 'border-red-500/30 bg-red-500/10'
+                  ? 'border-up-500/30 bg-up-500/10'
+                  : 'border-down-500/30 bg-down-500/10'
               }`}
             >
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold text-zinc-300">{s.symbol}</span>
+                <span className="font-mono text-xs font-bold text-ink-300">{s.symbol}</span>
                 <span
                   className={`flex items-center gap-1 text-sm font-semibold ${
-                    up ? 'text-emerald-400' : 'text-red-400'
+                    up ? 'text-up-400' : 'text-down-400'
                   }`}
                 >
                   {up ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
@@ -60,7 +60,7 @@ export function SectorWeeklyStrip({ sectors, loading }: { sectors: SectorWeekly[
                   {s.weeklyChangePercent.toFixed(2)}%
                 </span>
               </div>
-              <div className="mt-0.5 max-w-36 truncate text-xs text-zinc-400">{s.name}</div>
+              <div className="mt-0.5 max-w-36 truncate text-xs text-ink-400">{s.name}</div>
             </button>
           );
         })}

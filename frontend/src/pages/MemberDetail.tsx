@@ -10,8 +10,8 @@ import { Card, ErrorState, PartyBadge, Skeleton, TableSkeleton } from '../compon
 import { WatchButton } from '../components/WatchButton';
 
 const PIE_COLORS = [
-  '#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6',
-  '#14b8a6', '#f97316', '#ec4899', '#84cc16', '#6366f1', '#71717a',
+  '#7472f8', '#22b5d2', '#f6bd4f', '#3fd38c', '#f4707a',
+  '#b1b4ff', '#93e4f3', '#ffd78f', '#86e3b4', '#ffa3aa', '#6b7592',
 ];
 
 export function MemberDetail() {
@@ -52,7 +52,7 @@ export function MemberDetail() {
 
   return (
     <div className="space-y-4">
-      <Link to="/insiders" className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200">
+      <Link to="/insiders" className="inline-flex items-center gap-1.5 text-sm text-ink-400 hover:text-ink-200">
         <ArrowLeft className="w-4 h-4" /> All trades
       </Link>
 
@@ -68,12 +68,12 @@ export function MemberDetail() {
         <>
           <div className="flex items-end justify-between flex-wrap gap-3">
             <div>
-              <h1 className="flex items-center gap-2 text-2xl font-bold text-zinc-100">
+              <h1 className="flex items-center gap-2 text-2xl font-bold text-ink-100">
                 {summary.member}
                 <PartyBadge party={summary.party} />
                 <WatchButton type="member" value={summary.member} />
               </h1>
-              <p className="text-sm text-zinc-500">
+              <p className="text-sm text-ink-500">
                 {summary.party ? `${summary.party} · ` : ''}
                 {summary.chamber === 'HOUSE'
                   ? 'House of Representatives'
@@ -85,24 +85,24 @@ export function MemberDetail() {
             </div>
             <div className="flex gap-6 text-sm">
               <div>
-                <div className="text-2xl font-bold text-zinc-100">{summary.tradeCount.toLocaleString()}</div>
-                <div className="text-xs text-zinc-500 uppercase tracking-wider">Trades</div>
+                <div className="text-2xl font-bold text-ink-100">{summary.tradeCount.toLocaleString()}</div>
+                <div className="text-xs text-ink-500 uppercase tracking-wider">Trades</div>
               </div>
               {summary.estimatedVolume > 0 && (
                 <div>
-                  <div className="text-2xl font-bold text-zinc-100">
+                  <div className="text-2xl font-bold text-ink-100">
                     ${(summary.estimatedVolume / 1_000_000).toFixed(1)}M
                   </div>
-                  <div className="text-xs text-zinc-500 uppercase tracking-wider">Est. volume</div>
+                  <div className="text-xs text-ink-500 uppercase tracking-wider">Est. volume</div>
                 </div>
               )}
               <div>
-                <div className="text-2xl font-bold text-emerald-400">{summary.buyCount.toLocaleString()}</div>
-                <div className="text-xs text-zinc-500 uppercase tracking-wider">Buys</div>
+                <div className="text-2xl font-bold text-up-400">{summary.buyCount.toLocaleString()}</div>
+                <div className="text-xs text-ink-500 uppercase tracking-wider">Buys</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-red-400">{summary.sellCount.toLocaleString()}</div>
-                <div className="text-xs text-zinc-500 uppercase tracking-wider">Sells</div>
+                <div className="text-2xl font-bold text-down-400">{summary.sellCount.toLocaleString()}</div>
+                <div className="text-xs text-ink-500 uppercase tracking-wider">Sells</div>
               </div>
             </div>
           </div>
@@ -125,8 +125,8 @@ export function MemberDetail() {
                       ))}
                     </Pie>
                     <Tooltip
-                      contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8 }}
-                      itemStyle={{ color: '#e4e4e7' }}
+                      contentStyle={{ background: '#161c2d', border: '1px solid #343c55', borderRadius: 8 }}
+                      itemStyle={{ color: '#e7ebf3' }}
                     />
                     <Legend wrapperStyle={{ fontSize: 12 }} />
                   </PieChart>
@@ -135,18 +135,18 @@ export function MemberDetail() {
             </Card>
 
             <Card title="Top tickers">
-              <ul className="divide-y divide-zinc-800/70">
+              <ul className="divide-y divide-ink-800/70">
                 {summary.topTickers.map((t, i) => (
                   <li key={t.ticker} className="flex items-center justify-between px-4 py-2.5 text-sm">
                     <span className="flex items-center gap-3">
-                      <span className="text-xs text-zinc-600 w-4">{i + 1}</span>
-                      <span className="font-mono font-semibold text-zinc-100">{t.ticker}</span>
+                      <span className="text-xs text-ink-600 w-4">{i + 1}</span>
+                      <span className="font-mono font-semibold text-ink-100">{t.ticker}</span>
                     </span>
-                    <span className="text-zinc-400">{t.count} trades</span>
+                    <span className="text-ink-400">{t.count} trades</span>
                   </li>
                 ))}
                 {summary.topTickers.length === 0 && (
-                  <li className="px-4 py-6 text-sm text-zinc-500 text-center">No ticker-linked trades</li>
+                  <li className="px-4 py-6 text-sm text-ink-500 text-center">No ticker-linked trades</li>
                 )}
               </ul>
             </Card>

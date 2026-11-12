@@ -53,11 +53,11 @@ function ChartTooltip({ active, payload }: { active?: boolean; payload?: Array<{
   if (!active || !payload?.length) return null;
   const point = payload[0].payload;
   return (
-    <div className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs shadow-xl">
-      <div className="text-zinc-400">{point.date}</div>
-      <div className="mt-0.5 font-semibold text-zinc-100">${point.close.toFixed(2)}</div>
-      {point.buyCount > 0 && <div className="text-emerald-400">{point.buyCount} congress buy{point.buyCount > 1 ? 's' : ''}</div>}
-      {point.sellCount > 0 && <div className="text-red-400">{point.sellCount} congress sell{point.sellCount > 1 ? 's' : ''}</div>}
+    <div className="rounded-md border border-ink-700 bg-ink-900 px-3 py-2 text-xs shadow-xl">
+      <div className="text-ink-400">{point.date}</div>
+      <div className="mt-0.5 font-semibold text-ink-100">${point.close.toFixed(2)}</div>
+      {point.buyCount > 0 && <div className="text-up-400">{point.buyCount} congress buy{point.buyCount > 1 ? 's' : ''}</div>}
+      {point.sellCount > 0 && <div className="text-down-400">{point.sellCount} congress sell{point.sellCount > 1 ? 's' : ''}</div>}
     </div>
   );
 }
@@ -95,12 +95,12 @@ export function TickerDetail() {
 
   const chartData = useMemo(() => (detail ? buildChartData(detail) : []), [detail]);
   const up = chartData.length > 1 && chartData[chartData.length - 1].close >= chartData[0].close;
-  const lineColor = up ? '#10b981' : '#ef4444';
+  const lineColor = up ? '#22b673' : '#e5484d';
 
   if (error) {
     return (
       <div className="space-y-4">
-        <Link to="/insiders" className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200">
+        <Link to="/insiders" className="inline-flex items-center gap-1.5 text-sm text-ink-400 hover:text-ink-200">
           <ArrowLeft className="h-4 w-4" /> All trades
         </Link>
         <ErrorState message={error} onRetry={load} />
@@ -110,7 +110,7 @@ export function TickerDetail() {
 
   return (
     <div className="space-y-4">
-      <Link to="/insiders" className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200">
+      <Link to="/insiders" className="inline-flex items-center gap-1.5 text-sm text-ink-400 hover:text-ink-200">
         <ArrowLeft className="h-4 w-4" /> All trades
       </Link>
 
@@ -123,27 +123,27 @@ export function TickerDetail() {
         <>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h1 className="flex items-center gap-2 font-mono text-2xl font-bold text-zinc-100">
+              <h1 className="flex items-center gap-2 font-mono text-2xl font-bold text-ink-100">
                 {detail.ticker}
                 <WatchButton type="ticker" value={detail.ticker} />
               </h1>
-              <p className="text-sm text-zinc-500">
+              <p className="text-sm text-ink-500">
                 {detail.companyName ?? ''}
                 {detail.sector ? ` · ${detail.sector}` : ''}
               </p>
             </div>
             <div className="flex gap-6">
               <div>
-                <div className="text-2xl font-bold text-zinc-100">{detail.tradeCount.toLocaleString()}</div>
-                <div className="text-[10px] uppercase tracking-wider text-zinc-500">Congress trades</div>
+                <div className="text-2xl font-bold text-ink-100">{detail.tradeCount.toLocaleString()}</div>
+                <div className="text-[10px] uppercase tracking-wider text-ink-500">Congress trades</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-emerald-400">{detail.buyCount.toLocaleString()}</div>
-                <div className="text-[10px] uppercase tracking-wider text-zinc-500">Buys</div>
+                <div className="text-2xl font-bold text-up-400">{detail.buyCount.toLocaleString()}</div>
+                <div className="text-[10px] uppercase tracking-wider text-ink-500">Buys</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-red-400">{detail.sellCount.toLocaleString()}</div>
-                <div className="text-[10px] uppercase tracking-wider text-zinc-500">Sells</div>
+                <div className="text-2xl font-bold text-down-400">{detail.sellCount.toLocaleString()}</div>
+                <div className="text-[10px] uppercase tracking-wider text-ink-500">Sells</div>
               </div>
             </div>
           </div>
@@ -153,21 +153,21 @@ export function TickerDetail() {
               <div className="h-80 p-2">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={chartData} margin={{ top: 10, right: 20, bottom: 0, left: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#232a3f" vertical={false} />
                     <XAxis
                       dataKey="date"
-                      tick={{ fill: '#71717a', fontSize: 11 }}
-                      stroke="#3f3f46"
+                      tick={{ fill: '#6b7592', fontSize: 11 }}
+                      stroke="#343c55"
                       minTickGap={60}
                     />
                     <YAxis
-                      tick={{ fill: '#71717a', fontSize: 11 }}
-                      stroke="#3f3f46"
+                      tick={{ fill: '#6b7592', fontSize: 11 }}
+                      stroke="#343c55"
                       domain={['auto', 'auto']}
                       tickFormatter={(v: number) => `$${v.toFixed(0)}`}
                       width={60}
                     />
-                    <Tooltip content={<ChartTooltip />} cursor={{ stroke: '#52525b', strokeDasharray: '4 4' }} />
+                    <Tooltip content={<ChartTooltip />} cursor={{ stroke: '#535d7a', strokeDasharray: '4 4' }} />
                     <Line
                       type="monotone"
                       dataKey="close"
@@ -177,13 +177,13 @@ export function TickerDetail() {
                       isAnimationActive={false}
                     />
                     {/* Trade markers: >=8px dots with a 2px surface ring so they read on top of the line */}
-                    <Scatter dataKey="buy" fill="#10b981" stroke="#09090b" strokeWidth={2} r={5} isAnimationActive={false} />
-                    <Scatter dataKey="sell" fill="#ef4444" stroke="#09090b" strokeWidth={2} r={5} isAnimationActive={false} />
+                    <Scatter dataKey="buy" fill="#22b673" stroke="#0c111d" strokeWidth={2} r={5} isAnimationActive={false} />
+                    <Scatter dataKey="sell" fill="#e5484d" stroke="#0c111d" strokeWidth={2} r={5} isAnimationActive={false} />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
             ) : (
-              <p className="px-4 py-8 text-center text-sm text-zinc-500">
+              <p className="px-4 py-8 text-center text-sm text-ink-500">
                 No price history available for {detail.ticker} — markers need Yahoo data for this symbol.
               </p>
             )}
@@ -192,26 +192,26 @@ export function TickerDetail() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <Card title="Member activity">
               {detail.members.length > 0 ? (
-                <ul className="max-h-96 divide-y divide-zinc-800/60 overflow-y-auto">
+                <ul className="max-h-96 divide-y divide-ink-800/60 overflow-y-auto">
                   {detail.members.map((m) => (
                     <li key={m.member} className="flex items-center gap-2 px-4 py-2 text-sm">
                       <Link
                         to={`/insiders/member/${encodeURIComponent(m.member)}`}
-                        className="truncate text-zinc-200 hover:text-emerald-400"
+                        className="truncate text-ink-200 hover:text-brand-400"
                       >
                         {m.member}
                       </Link>
                       <PartyBadge party={m.party} />
                       <span className="ml-auto shrink-0 text-xs">
-                        <span className="text-emerald-400">{m.buyCount}B</span>
-                        <span className="mx-1 text-zinc-600">/</span>
-                        <span className="text-red-400">{m.sellCount}S</span>
+                        <span className="text-up-400">{m.buyCount}B</span>
+                        <span className="mx-1 text-ink-600">/</span>
+                        <span className="text-down-400">{m.sellCount}S</span>
                       </span>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="px-4 py-8 text-center text-sm text-zinc-500">
+                <p className="px-4 py-8 text-center text-sm text-ink-500">
                   No members of Congress have disclosed trades in {detail.ticker}.
                 </p>
               )}
@@ -227,7 +227,7 @@ export function TickerDetail() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-xs uppercase tracking-wider text-zinc-500">
+                    <tr className="text-left text-xs uppercase tracking-wider text-ink-500">
                       <th className="px-4 py-2.5 font-medium">Insider</th>
                       <th className="px-4 py-2.5 font-medium">Type</th>
                       <th className="px-4 py-2.5 font-medium text-right">Shares</th>
@@ -237,29 +237,29 @@ export function TickerDetail() {
                   </thead>
                   <tbody>
                     {corporate.slice(0, 15).map((c) => (
-                      <tr key={c.id} className="border-t border-zinc-800/60 even:bg-zinc-900/40">
+                      <tr key={c.id} className="border-t border-ink-800/60 even:bg-ink-900/40">
                         <td className="px-4 py-2">
-                          <span className="block text-zinc-200">{c.insiderName}</span>
-                          {c.insiderTitle && <span className="block text-xs text-zinc-500">{c.insiderTitle}</span>}
+                          <span className="block text-ink-200">{c.insiderName}</span>
+                          {c.insiderTitle && <span className="block text-xs text-ink-500">{c.insiderTitle}</span>}
                         </td>
                         <td className="px-4 py-2">
                           <span
                             className={`text-xs font-semibold ${
                               c.transactionType === 'BUY'
-                                ? 'text-emerald-400'
+                                ? 'text-up-400'
                                 : c.transactionType === 'SELL'
-                                  ? 'text-red-400'
-                                  : 'text-zinc-400'
+                                  ? 'text-down-400'
+                                  : 'text-ink-400'
                             }`}
                           >
                             {c.transactionType}
                           </span>
                         </td>
-                        <td className="px-4 py-2 text-right text-zinc-300">
+                        <td className="px-4 py-2 text-right text-ink-300">
                           {c.shares != null ? c.shares.toLocaleString() : '—'}
                         </td>
-                        <td className="px-4 py-2 text-right text-zinc-300">{formatMoney(c.value)}</td>
-                        <td className="px-4 py-2 whitespace-nowrap text-zinc-400">
+                        <td className="px-4 py-2 text-right text-ink-300">{formatMoney(c.value)}</td>
+                        <td className="px-4 py-2 whitespace-nowrap text-ink-400">
                           {format(parseISO(c.transactionDate), 'MMM d, yyyy')}
                         </td>
                       </tr>

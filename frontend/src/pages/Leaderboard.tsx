@@ -9,7 +9,7 @@ import { Card, EmptyState, ErrorState, PartyBadge, TableSkeleton } from '../comp
 function ReturnCell({ value }: { value: number }) {
   const up = value >= 0;
   return (
-    <span className={`font-semibold ${up ? 'text-emerald-400' : 'text-red-400'}`}>
+    <span className={`font-semibold ${up ? 'text-up-400' : 'text-down-400'}`}>
       {up ? '+' : ''}
       {value.toFixed(2)}%
     </span>
@@ -58,15 +58,15 @@ export function Leaderboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="flex items-center gap-2 text-2xl font-bold text-zinc-100">
-          <Trophy className="h-6 w-6 text-amber-400" />
+        <h1 className="flex items-center gap-2 text-2xl font-bold text-ink-100">
+          <Trophy className="h-6 w-6 text-accent-400" />
           Trader Leaderboard
         </h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-ink-500">
           Members ranked by the average return of their disclosed buys from the last 12 months,
           measured to the latest close. Only members with 5+ scored buys are ranked.
           {data?.computedAt && (
-            <span className="ml-1 text-zinc-600">
+            <span className="ml-1 text-ink-600">
               Computed {format(parseISO(data.computedAt), 'MMM d, HH:mm')}.
             </span>
           )}
@@ -82,7 +82,7 @@ export function Leaderboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-wider text-zinc-500">
+                <tr className="text-left text-xs uppercase tracking-wider text-ink-500">
                   <th className="px-4 py-3 font-medium">#</th>
                   <th className="px-4 py-3 font-medium">Member</th>
                   <th className="px-4 py-3 font-medium text-right">Scored buys</th>
@@ -97,25 +97,25 @@ export function Leaderboard() {
                 {data.entries.map((entry, i) => (
                   <tr
                     key={entry.member}
-                    className="border-t border-zinc-800/60 even:bg-zinc-900/40 hover:bg-zinc-800/40 transition-colors"
+                    className="border-t border-ink-800/60 even:bg-ink-900/40 hover:bg-ink-800/40 transition-colors"
                   >
-                    <td className="px-4 py-2.5 text-zinc-500">{i + 1}</td>
+                    <td className="px-4 py-2.5 text-ink-500">{i + 1}</td>
                     <td className="px-4 py-2.5">
                       <div className="flex items-center gap-1.5">
                         <Link
                           to={`/insiders/member/${encodeURIComponent(entry.member)}`}
-                          className="font-medium text-zinc-200 hover:text-emerald-400"
+                          className="font-medium text-ink-200 hover:text-brand-400"
                         >
                           {entry.member}
                         </Link>
                         <PartyBadge party={entry.party} />
                       </div>
-                      <span className="text-xs text-zinc-500">
+                      <span className="text-xs text-ink-500">
                         {chamberLabel(entry.chamber)}
                         {entry.state ? ` · ${entry.state}` : ''}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 text-right text-zinc-300">{entry.scoredBuys}</td>
+                    <td className="px-4 py-2.5 text-right text-ink-300">{entry.scoredBuys}</td>
                     <td className="px-4 py-2.5 text-right">
                       <ReturnCell value={entry.avgReturnPercent} />
                     </td>
@@ -126,12 +126,12 @@ export function Leaderboard() {
                       {entry.bestTicker ? (
                         <Link
                           to={`/insiders/ticker/${encodeURIComponent(entry.bestTicker)}`}
-                          className="font-mono text-zinc-300 hover:text-emerald-400"
+                          className="font-mono text-ink-300 hover:text-brand-400"
                         >
                           {entry.bestTicker}
                         </Link>
                       ) : (
-                        <span className="text-zinc-600">—</span>
+                        <span className="text-ink-600">—</span>
                       )}{' '}
                       <ReturnCell value={entry.bestReturnPercent} />
                     </td>
@@ -141,7 +141,7 @@ export function Leaderboard() {
             </table>
           </div>
         ) : data?.computing ? (
-          <div className="px-4 py-12 text-center text-sm text-zinc-400">
+          <div className="px-4 py-12 text-center text-sm text-ink-400">
             Crunching returns against price history — this takes a few minutes on first run.
             The page refreshes automatically.
           </div>

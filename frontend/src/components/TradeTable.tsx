@@ -30,7 +30,7 @@ function TickerCell({ trade, hot, onOpen }: { trade: Trade; hot?: HotTicker; onO
   if (!trade.ticker) {
     return (
       <div className="max-w-56">
-        <span className="block truncate text-sm text-zinc-400" title={trade.assetDescription ?? ''}>
+        <span className="block truncate text-sm text-ink-400" title={trade.assetDescription ?? ''}>
           {trade.assetDescription ?? '—'}
         </span>
       </div>
@@ -38,9 +38,9 @@ function TickerCell({ trade, hot, onOpen }: { trade: Trade; hot?: HotTicker; onO
   }
   const hotClass = hot
     ? hot.highlight === 'BUY'
-      ? 'bg-blue-500/25 text-blue-300 ring-1 ring-blue-500/40'
-      : 'bg-zinc-500/30 text-zinc-200 ring-1 ring-zinc-400/40'
-    : 'text-zinc-100 hover:text-emerald-400';
+      ? 'bg-accent-500/15 text-accent-300 ring-1 ring-accent-500/40'
+      : 'bg-ink-500/30 text-ink-200 ring-1 ring-ink-400/40'
+    : 'text-ink-100 hover:text-brand-400';
   return (
     <div className="max-w-56">
       <button
@@ -55,7 +55,7 @@ function TickerCell({ trade, hot, onOpen }: { trade: Trade; hot?: HotTicker; onO
         {trade.ticker}
       </button>
       {trade.assetDescription && (
-        <span className="mt-0.5 block truncate text-xs text-zinc-500" title={trade.assetDescription}>
+        <span className="mt-0.5 block truncate text-xs text-ink-500" title={trade.assetDescription}>
           {trade.assetDescription}
         </span>
       )}
@@ -69,7 +69,7 @@ function SuspiciousFlag({ trade }: { trade: Trade }) {
   }
   return (
     <AlertTriangle
-      className="ml-1 inline h-3.5 w-3.5 text-amber-500"
+      className="ml-1 inline h-3.5 w-3.5 text-accent-500"
       aria-label="Implausible date"
     />
   );
@@ -122,8 +122,8 @@ export function TradeTable({
         {sortable ? (
           <button
             onClick={toggle}
-            className={`inline-flex items-center gap-1 uppercase tracking-wider transition-colors hover:text-zinc-300 ${
-              active ? 'text-emerald-400' : ''
+            className={`inline-flex items-center gap-1 uppercase tracking-wider transition-colors hover:text-ink-300 ${
+              active ? 'text-brand-400' : ''
             }`}
           >
             {h.label}
@@ -141,27 +141,27 @@ export function TradeTable({
       {/* Desktop table */}
       <div className="hidden overflow-x-auto md:block">
         <table className="w-full text-sm">
-          <thead className="sticky top-0 z-10 bg-zinc-900">
-            <tr className="text-left text-xs uppercase tracking-wider text-zinc-500">{headers.map(headerCell)}</tr>
+          <thead className="sticky top-0 z-10 bg-ink-900">
+            <tr className="text-left text-xs uppercase tracking-wider text-ink-500">{headers.map(headerCell)}</tr>
           </thead>
           <tbody>
             {trades.map((trade) => (
               <tr
                 key={trade.id}
-                className="border-t border-zinc-800/60 even:bg-zinc-900/40 hover:bg-zinc-800/40 transition-colors"
+                className="border-t border-ink-800/60 even:bg-ink-900/40 hover:bg-ink-800/40 transition-colors"
               >
                 {!hideMember && (
                   <td className="px-4 py-2.5">
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => navigate(`/insiders/member/${encodeURIComponent(trade.member)}`)}
-                        className="font-medium text-zinc-200 transition-colors hover:text-emerald-400 text-left"
+                        className="font-medium text-ink-200 transition-colors hover:text-brand-400 text-left"
                       >
                         {trade.member}
                       </button>
                       <PartyBadge party={trade.party} />
                     </div>
-                    <span className="block text-xs text-zinc-500">
+                    <span className="block text-xs text-ink-500">
                       {chamberLabel(trade.chamber)}
                       {trade.state ? ` · ${trade.state}` : ''}
                     </span>
@@ -183,14 +183,14 @@ export function TradeTable({
                     />
                   </div>
                 </td>
-                <td className="px-4 py-2.5 whitespace-nowrap text-zinc-300">{trade.amountRange ?? '—'}</td>
+                <td className="px-4 py-2.5 whitespace-nowrap text-ink-300">{trade.amountRange ?? '—'}</td>
                 <td className="px-4 py-2.5 whitespace-nowrap">
-                  <span className="block text-zinc-300">
+                  <span className="block text-ink-300">
                     {formatDate(trade.transactionDate)}
                     <SuspiciousFlag trade={trade} />
                   </span>
                   {trade.disclosureDate && (
-                    <span className="block text-xs text-zinc-500">filed {formatDate(trade.disclosureDate)}</span>
+                    <span className="block text-xs text-ink-500">filed {formatDate(trade.disclosureDate)}</span>
                   )}
                 </td>
                 <td className="px-4 py-2.5">
@@ -205,13 +205,13 @@ export function TradeTable({
                       href={trade.ptrLink}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-block text-zinc-500 transition-colors hover:text-emerald-400"
+                      className="inline-block text-ink-500 transition-colors hover:text-brand-400"
                       title="Official filing"
                     >
                       <ExternalLink className="h-4 w-4" />
                     </a>
                   ) : (
-                    <span className="text-zinc-700">—</span>
+                    <span className="text-ink-700">—</span>
                   )}
                 </td>
               </tr>
@@ -221,7 +221,7 @@ export function TradeTable({
       </div>
 
       {/* Mobile cards */}
-      <ul className="divide-y divide-zinc-800/60 md:hidden">
+      <ul className="divide-y divide-ink-800/60 md:hidden">
         {trades.map((trade) => (
           <li key={trade.id} className="space-y-1.5 px-4 py-3">
             <div className="flex items-center justify-between gap-2">
@@ -231,18 +231,18 @@ export function TradeTable({
             {!hideMember && (
               <button
                 onClick={() => navigate(`/insiders/member/${encodeURIComponent(trade.member)}`)}
-                className="flex items-center gap-1.5 text-sm text-zinc-300"
+                className="flex items-center gap-1.5 text-sm text-ink-300"
               >
                 {trade.member}
                 <PartyBadge party={trade.party} />
-                <span className="text-xs text-zinc-500">
+                <span className="text-xs text-ink-500">
                   {chamberLabel(trade.chamber)}
                   {trade.state ? ` · ${trade.state}` : ''}
                 </span>
               </button>
             )}
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-500">
-              <span className="text-zinc-300">{trade.amountRange ?? '—'}</span>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-500">
+              <span className="text-ink-300">{trade.amountRange ?? '—'}</span>
               <span>
                 {formatDate(trade.transactionDate)}
                 <SuspiciousFlag trade={trade} />
@@ -258,7 +258,7 @@ export function TradeTable({
                 lagDays={trade.disclosureLagDays}
               />
               {trade.ptrLink && (
-                <a href={trade.ptrLink} target="_blank" rel="noreferrer" className="text-zinc-500">
+                <a href={trade.ptrLink} target="_blank" rel="noreferrer" className="text-ink-500">
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               )}

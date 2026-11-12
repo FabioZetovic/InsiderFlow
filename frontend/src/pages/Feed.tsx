@@ -32,11 +32,11 @@ export function Feed() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="flex items-center gap-2 text-2xl font-bold text-zinc-100">
-          <Star className="h-6 w-6 text-amber-400" fill="currentColor" />
+        <h1 className="flex items-center gap-2 text-2xl font-bold text-ink-100">
+          <Star className="h-6 w-6 text-accent-400" fill="currentColor" />
           My Feed
         </h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-ink-500">
           Trades by members and on tickers you follow. Star any member or ticker to add them here.
         </p>
       </div>
@@ -46,13 +46,13 @@ export function Feed() {
           <div className="flex flex-wrap gap-4 px-4 py-3 text-sm">
             {watchlist.members.length > 0 && (
               <div>
-                <span className="text-xs uppercase tracking-wider text-zinc-500">Members</span>
+                <span className="text-xs uppercase tracking-wider text-ink-500">Members</span>
                 <div className="mt-1 flex flex-wrap gap-1.5">
                   {watchlist.members.map((m) => (
                     <Link
                       key={m}
                       to={`/insiders/member/${encodeURIComponent(m)}`}
-                      className="rounded bg-zinc-800 px-2 py-0.5 text-xs text-zinc-300 hover:text-emerald-400"
+                      className="rounded bg-ink-800 px-2 py-0.5 text-xs text-ink-300 hover:text-brand-400"
                     >
                       {m}
                     </Link>
@@ -62,13 +62,13 @@ export function Feed() {
             )}
             {watchlist.tickers.length > 0 && (
               <div>
-                <span className="text-xs uppercase tracking-wider text-zinc-500">Tickers</span>
+                <span className="text-xs uppercase tracking-wider text-ink-500">Tickers</span>
                 <div className="mt-1 flex flex-wrap gap-1.5">
                   {watchlist.tickers.map((t) => (
                     <Link
                       key={t}
                       to={`/insiders/ticker/${encodeURIComponent(t)}`}
-                      className="rounded bg-zinc-800 px-2 py-0.5 font-mono text-xs text-zinc-300 hover:text-emerald-400"
+                      className="rounded bg-ink-800 px-2 py-0.5 font-mono text-xs text-ink-300 hover:text-brand-400"
                     >
                       {t}
                     </Link>

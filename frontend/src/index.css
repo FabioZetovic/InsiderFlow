@@ -1,12 +1,76 @@
 @import 'tailwindcss';
 
+/*
+ * InsiderFlow design tokens.
+ *   ink        — cool navy-slate neutrals (backgrounds, surfaces, borders, text)
+ *   brand      — primary: indigo. Navigation, buttons, links, focus, logo.
+ *   secondary  — cyan. Informational tags, earnings, secondary chart series.
+ *   accent     — amber. Highlights: hot tickers, LATE flags, warnings.
+ *   up / down  — semantic gain / loss and buy / sell. Never used for branding.
+ */
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+
+  --color-ink-50: #f4f6fb;
+  --color-ink-100: #e7ebf3;
+  --color-ink-200: #d2d8e5;
+  --color-ink-300: #b1bacd;
+  --color-ink-400: #8b95ad;
+  --color-ink-500: #6b7592;
+  --color-ink-600: #535d7a;
+  --color-ink-700: #343c55;
+  --color-ink-800: #232a3f;
+  --color-ink-900: #161c2d;
+  --color-ink-950: #0c111d;
+
+  --color-brand-300: #b1b4ff;
+  --color-brand-400: #9294ff;
+  --color-brand-500: #7472f8;
+  --color-brand-600: #5b57e8;
+  --color-brand-700: #4943c9;
+
+  --color-secondary-300: #93e4f3;
+  --color-secondary-400: #52cfe8;
+  --color-secondary-500: #22b5d2;
+  --color-secondary-600: #1893ae;
+
+  --color-accent-300: #ffd78f;
+  --color-accent-400: #f6bd4f;
+  --color-accent-500: #e9a323;
+  --color-accent-600: #c78610;
+
+  --color-up-300: #86e3b4;
+  --color-up-400: #3fd38c;
+  --color-up-500: #22b673;
+  --color-up-600: #18975d;
+
+  --color-down-300: #ffa3aa;
+  --color-down-400: #f4707a;
+  --color-down-500: #e5484d;
+  --color-down-600: #c63a40;
+}
+
 :root {
   color-scheme: dark;
 }
 
 body {
-  @apply bg-zinc-950 text-zinc-200 antialiased;
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  @apply bg-ink-950 text-ink-200 antialiased;
+  font-family: var(--font-sans);
+  font-feature-settings: 'cv11', 'ss01';
+  font-variant-numeric: tabular-nums;
+  background-image: radial-gradient(1200px 500px at 50% -200px, rgb(91 87 232 / 0.10), transparent);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: rgb(116 114 248 / 0.35);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
 }
 
 ::-webkit-scrollbar {
@@ -15,10 +79,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: theme('colors.zinc.900');
+  background: var(--color-ink-900);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: theme('colors.zinc.700');
+  background: var(--color-ink-700);
   border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-600);
 }

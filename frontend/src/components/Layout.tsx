@@ -7,8 +7,10 @@ import { getStatus } from '../api';
 import type { AppStatus } from '../types';
 
 const tabClass = ({ isActive }: { isActive: boolean }) =>
-  `flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-    isActive ? 'bg-zinc-800 text-emerald-400' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
+  `flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+    isActive
+      ? 'bg-brand-500/15 text-brand-300 ring-1 ring-inset ring-brand-500/30'
+      : 'text-ink-400 hover:text-ink-100 hover:bg-ink-800/60'
   }`;
 
 function formatInstant(value: string | null): string {
@@ -42,13 +44,15 @@ export function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-zinc-800 bg-zinc-950/95 sticky top-0 z-20 backdrop-blur">
+      <header className="border-b border-ink-800/80 bg-ink-950/80 sticky top-0 z-20 backdrop-blur-md">
         <div className="max-w-screen-2xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-emerald-400" />
-              <span className="font-bold text-zinc-100 tracking-tight">
-                Insider<span className="text-emerald-400">Flow</span>
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-brand-500 to-brand-700 shadow-sm shadow-brand-700/40">
+                <TrendingUp className="w-4 h-4 text-white" />
+              </span>
+              <span className="font-semibold text-ink-50 tracking-tight">
+                Insider<span className="text-brand-400">Flow</span>
               </span>
             </div>
             <nav className="flex items-center gap-0.5">
@@ -82,11 +86,11 @@ export function Layout() {
               </NavLink>
             </nav>
           </div>
-          <div className="flex items-center gap-3 text-sm text-zinc-400">
+          <div className="flex items-center gap-3 text-sm text-ink-400">
             <span className="hidden sm:inline">{user?.username}</span>
             <button
               onClick={logout}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-zinc-900 hover:text-zinc-200 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-ink-900 hover:text-ink-200 transition-colors"
               title="Log out"
             >
               <LogOut className="w-4 h-4" />
@@ -98,14 +102,14 @@ export function Layout() {
 
       {/* Data pipeline warnings — silence must not look like success */}
       {status?.senateStale && (
-        <div className="border-b border-amber-500/30 bg-amber-500/10 px-4 py-2 text-center text-xs text-amber-400">
+        <div className="border-b border-accent-500/30 bg-accent-500/10 px-4 py-2 text-center text-xs text-accent-400">
           <AlertTriangle className="mr-1.5 inline h-3.5 w-3.5" />
           Senate data may be stale — the eFD scraper hasn't run in over 3 days. Run{' '}
-          <code className="rounded bg-zinc-900 px-1">node scripts/senate-efd-scraper.js</code> to refresh.
+          <code className="rounded bg-ink-900 px-1">node scripts/senate-efd-scraper.js</code> to refresh.
         </div>
       )}
       {status?.newTrumpFilingDetected && (
-        <div className="border-b border-sky-500/30 bg-sky-500/10 px-4 py-2 text-center text-xs text-sky-400">
+        <div className="border-b border-secondary-500/30 bg-secondary-500/10 px-4 py-2 text-center text-xs text-secondary-400">
           <AlertTriangle className="mr-1.5 inline h-3.5 w-3.5" />
           A new presidential 278-T filing dated {status.newTrumpFilingDate} was detected on OGE —
           Trump's trades here may be incomplete until the dataset updates.
@@ -116,8 +120,8 @@ export function Layout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-zinc-800/60 px-4 py-3">
-        <div className="max-w-screen-2xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-600">
+      <footer className="border-t border-ink-800/60 px-4 py-3">
+        <div className="max-w-screen-2xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs text-ink-600">
           <span>
             {status
               ? `${status.totalTrades.toLocaleString()} trades · last ingest ${formatInstant(status.lastIngestAt)} · senate scraper ${

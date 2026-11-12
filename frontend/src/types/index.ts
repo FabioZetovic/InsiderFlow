@@ -31,9 +31,9 @@ export type Party = 'Democrat' | 'Republican' | 'Independent' | string;
 
 export function partyColor(party: Party | null | undefined): string {
   if (party === 'Democrat') return 'text-blue-400';
-  if (party === 'Republican') return 'text-red-400';
-  if (party === 'Independent') return 'text-violet-400';
-  return 'text-zinc-500';
+  if (party === 'Republican') return 'text-down-400';
+  if (party === 'Independent') return 'text-ink-200';
+  return 'text-ink-500';
 }
 
 export function partyInitial(party: Party | null | undefined): string {

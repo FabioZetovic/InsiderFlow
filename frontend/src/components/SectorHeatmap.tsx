@@ -19,16 +19,16 @@ export function SectorHeatmap({ flows }: { flows: SectorFlow[] }) {
           style={{ background: heatColor(flow.changePercent) }}
         >
           <div className="flex items-baseline justify-between">
-            <span className="font-mono text-sm font-bold text-zinc-100">{flow.symbol}</span>
-            <span className={`text-sm font-semibold ${flow.changePercent >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+            <span className="font-mono text-sm font-bold text-ink-100">{flow.symbol}</span>
+            <span className={`text-sm font-semibold ${flow.changePercent >= 0 ? 'text-up-300' : 'text-down-300'}`}>
               {flow.changePercent >= 0 ? '+' : ''}
               {flow.changePercent.toFixed(2)}%
             </span>
           </div>
-          <div className="mt-1 text-xs text-zinc-300/90 truncate" title={flow.name}>
+          <div className="mt-1 text-xs text-ink-300/90 truncate" title={flow.name}>
             {flow.name}
           </div>
-          <div className="mt-1 text-xs text-zinc-400">${flow.price.toFixed(2)}</div>
+          <div className="mt-1 text-xs text-ink-400">${flow.price.toFixed(2)}</div>
         </div>
       ))}
     </div>

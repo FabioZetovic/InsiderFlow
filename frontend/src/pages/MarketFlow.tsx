@@ -42,7 +42,7 @@ export function MarketFlow() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold text-zinc-100">Market Flow</h1>
+      <h1 className="text-xl font-bold text-ink-100">Market Flow</h1>
 
       <Card title="Sector flow — SPDR sector ETFs (daily % change)">
         {flows.loading ? (

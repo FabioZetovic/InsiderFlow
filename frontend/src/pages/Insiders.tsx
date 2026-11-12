@@ -127,8 +127,8 @@ export function Insiders() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-100">Insiders</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h1 className="text-2xl font-bold text-ink-100">Insiders</h1>
+        <p className="mt-1 text-sm text-ink-500">
           Stock trades disclosed by members of Congress and the President, updated daily.
         </p>
       </div>
@@ -138,14 +138,14 @@ export function Insiders() {
       <DigestPanel />
 
       <section>
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">Spotlight</h2>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-500">Spotlight</h2>
         <SpotlightCards members={spotlight} loading={spotlightLoading} />
       </section>
 
       <section>
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">All trades</h2>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-500">All trades</h2>
         <Card>
-          <div className="border-b border-zinc-800 px-4 py-3">
+          <div className="border-b border-ink-800 px-4 py-3">
             <FilterBar
               members={members}
               sectors={sectors}

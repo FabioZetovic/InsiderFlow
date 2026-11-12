@@ -12,16 +12,16 @@ const ACCENTS: Record<string, { ring: string; text: string; chip: string }> = {
     chip: 'bg-blue-500/15 text-blue-300',
   },
   'Donald Trump': {
-    ring: 'ring-red-500/40 bg-gradient-to-br from-red-500/10 to-transparent',
-    text: 'text-red-400',
-    chip: 'bg-red-500/15 text-red-300',
+    ring: 'ring-down-500/40 bg-gradient-to-br from-down-500/10 to-transparent',
+    text: 'text-down-400',
+    chip: 'bg-down-500/15 text-down-300',
   },
 };
 
 const DEFAULT_ACCENT = {
-  ring: 'ring-zinc-700 bg-zinc-900/50',
-  text: 'text-zinc-300',
-  chip: 'bg-zinc-800 text-zinc-300',
+  ring: 'ring-ink-700 bg-ink-900/50',
+  text: 'text-ink-300',
+  chip: 'bg-ink-800 text-ink-300',
 };
 
 function initials(name: string): string {
@@ -47,10 +47,10 @@ function SpotlightCard({ member }: { member: SpotlightMember }) {
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <Star className={`h-3.5 w-3.5 ${accent.text}`} fill="currentColor" />
-            <span className="truncate font-semibold text-zinc-100">{member.name}</span>
+            <span className="truncate font-semibold text-ink-100">{member.name}</span>
             <PartyBadge party={member.party} />
           </div>
-          <div className="text-xs text-zinc-500">
+          <div className="text-xs text-ink-500">
             {member.found
               ? `${chamberLabel(member.chamber)}${member.state ? ` · ${member.state}` : ''} · ${member.tradeCount.toLocaleString()} trades`
               : 'No trading disclosures found'}
@@ -59,12 +59,12 @@ function SpotlightCard({ member }: { member: SpotlightMember }) {
         {member.found && (
           <div className="ml-auto flex shrink-0 gap-4 text-right">
             <div>
-              <div className="text-lg font-bold text-emerald-400">{member.buyCount.toLocaleString()}</div>
-              <div className="text-[10px] uppercase tracking-wider text-zinc-500">Buys</div>
+              <div className="text-lg font-bold text-up-400">{member.buyCount.toLocaleString()}</div>
+              <div className="text-[10px] uppercase tracking-wider text-ink-500">Buys</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-red-400">{member.sellCount.toLocaleString()}</div>
-              <div className="text-[10px] uppercase tracking-wider text-zinc-500">Sells</div>
+              <div className="text-lg font-bold text-down-400">{member.sellCount.toLocaleString()}</div>
+              <div className="text-[10px] uppercase tracking-wider text-ink-500">Sells</div>
             </div>
           </div>
         )}
@@ -76,11 +76,11 @@ function SpotlightCard({ member }: { member: SpotlightMember }) {
             {member.recentTrades.map((trade) => (
               <li key={trade.id} className="flex items-center gap-2 text-sm">
                 <TypeBadge type={trade.transactionType} />
-                <span className="font-mono font-semibold text-zinc-100 w-14 truncate">
+                <span className="font-mono font-semibold text-ink-100 w-14 truncate">
                   {trade.ticker ?? '—'}
                 </span>
-                <span className="truncate text-xs text-zinc-500">{trade.amountRange ?? ''}</span>
-                <span className="ml-auto shrink-0 text-xs text-zinc-500">
+                <span className="truncate text-xs text-ink-500">{trade.amountRange ?? ''}</span>
+                <span className="ml-auto shrink-0 text-xs text-ink-500">
                   {format(parseISO(trade.transactionDate), 'MMM d, yyyy')}
                 </span>
               </li>
@@ -94,7 +94,7 @@ function SpotlightCard({ member }: { member: SpotlightMember }) {
           </button>
         </>
       ) : (
-        <p className="mt-3 text-xs text-zinc-500">
+        <p className="mt-3 text-xs text-ink-500">
           STOCK Act periodic transaction reports cover members of Congress — {member.name} has no
           filings in the House/Senate disclosure data.
         </p>

@@ -32,7 +32,7 @@ export function WatchButton({
       disabled={busy}
       title={watched ? 'Unfollow' : 'Follow'}
       className={`transition-colors ${
-        watched ? 'text-amber-400 hover:text-amber-300' : 'text-zinc-600 hover:text-zinc-300'
+        watched ? 'text-accent-400 hover:text-accent-300' : 'text-ink-600 hover:text-ink-300'
       } ${busy ? 'opacity-50' : ''}`}
     >
       <Star className={iconClass} fill={watched ? 'currentColor' : 'none'} />

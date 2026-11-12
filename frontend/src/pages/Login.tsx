@@ -41,59 +41,59 @@ export function Login() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <TrendingUp className="w-7 h-7 text-emerald-400" />
-          <span className="text-2xl font-bold text-zinc-100 tracking-tight">
-            Insider<span className="text-emerald-400">Flow</span>
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 shadow-md shadow-brand-700/40"><TrendingUp className="w-5 h-5 text-white" /></span>
+          <span className="text-2xl font-bold text-ink-100 tracking-tight">
+            Insider<span className="text-brand-400">Flow</span>
           </span>
         </div>
         <form
           onSubmit={handleSubmit}
-          className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-6 space-y-4"
+          className="rounded-lg border border-ink-800 bg-ink-900/50 p-6 space-y-4"
         >
-          <h1 className="text-lg font-semibold text-zinc-100">Sign in</h1>
+          <h1 className="text-lg font-semibold text-ink-100">Sign in</h1>
           {demoMode && (
-            <div className="flex items-start gap-2 rounded-md bg-emerald-500/10 ring-1 ring-emerald-500/30 px-3 py-2 text-sm text-emerald-300">
+            <div className="flex items-start gap-2 rounded-md bg-up-500/10 ring-1 ring-up-500/30 px-3 py-2 text-sm text-up-300">
               <Sparkles className="mt-0.5 h-4 w-4 shrink-0" />
               <span>Demo mode — sign in with <strong>any email and any password</strong> to explore.</span>
             </div>
           )}
           {error && (
-            <div className="rounded-md bg-red-500/10 ring-1 ring-red-500/30 px-3 py-2 text-sm text-red-400">
+            <div className="rounded-md bg-down-500/10 ring-1 ring-down-500/30 px-3 py-2 text-sm text-down-400">
               {error}
             </div>
           )}
           <label className="block">
-            <span className="text-sm text-zinc-400">Email</span>
+            <span className="text-sm text-ink-400">Email</span>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-md bg-zinc-950 border border-zinc-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+              className="mt-1 w-full rounded-md bg-ink-950 border border-ink-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500"
               placeholder="you@example.com"
             />
           </label>
           <label className="block">
-            <span className="text-sm text-zinc-400">Password</span>
+            <span className="text-sm text-ink-400">Password</span>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-md bg-zinc-950 border border-zinc-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+              className="mt-1 w-full rounded-md bg-ink-950 border border-ink-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500"
               placeholder="••••••••"
             />
           </label>
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-md bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 px-3 py-2 text-sm font-semibold text-white transition-colors"
+            className="w-full rounded-md bg-brand-600 hover:bg-brand-500 disabled:opacity-50 px-3 py-2 text-sm font-semibold text-white transition-colors"
           >
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
-          <p className="text-sm text-zinc-500 text-center">
+          <p className="text-sm text-ink-500 text-center">
             No account?{' '}
-            <Link to="/register" className="text-emerald-400 hover:underline">
+            <Link to="/register" className="text-brand-400 hover:underline">
               Register
             </Link>
           </p>

@@ -49,11 +49,11 @@ export function SectorDetail() {
 
   return (
     <div className="space-y-4">
-      <Link to="/insiders" className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200">
+      <Link to="/insiders" className="inline-flex items-center gap-1.5 text-sm text-ink-400 hover:text-ink-200">
         <ArrowLeft className="w-4 h-4" /> All trades
       </Link>
 
-      <h1 className="text-2xl font-bold text-zinc-100">{sector}</h1>
+      <h1 className="text-2xl font-bold text-ink-100">{sector}</h1>
 
       <Card title="Buy / sell volume over time">
         {loading && !timeline ? (
@@ -64,18 +64,18 @@ export function SectorDetail() {
           <div className="h-72 p-2">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 10, right: 20, bottom: 0, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
-                <XAxis dataKey="period" tick={{ fill: '#71717a', fontSize: 11 }} stroke="#3f3f46" />
-                <YAxis tick={{ fill: '#71717a', fontSize: 11 }} stroke="#3f3f46" allowDecimals={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#232a3f" vertical={false} />
+                <XAxis dataKey="period" tick={{ fill: '#6b7592', fontSize: 11 }} stroke="#343c55" />
+                <YAxis tick={{ fill: '#6b7592', fontSize: 11 }} stroke="#343c55" allowDecimals={false} />
                 <Tooltip
-                  contentStyle={{ background: '#18181b', border: '1px solid #3f3f46', borderRadius: 8 }}
-                  itemStyle={{ color: '#e4e4e7' }}
-                  labelStyle={{ color: '#a1a1aa' }}
+                  contentStyle={{ background: '#161c2d', border: '1px solid #343c55', borderRadius: 8 }}
+                  itemStyle={{ color: '#e7ebf3' }}
+                  labelStyle={{ color: '#8b95ad' }}
                   cursor={{ fill: 'rgba(255,255,255,0.04)' }}
                 />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="buyCount" name="Buys" fill="#10b981" radius={[2, 2, 0, 0]} />
-                <Bar dataKey="sellCount" name="Sells" fill="#ef4444" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="buyCount" name="Buys" fill="#22b673" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="sellCount" name="Sells" fill="#e5484d" radius={[2, 2, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
