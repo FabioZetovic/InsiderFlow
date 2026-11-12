@@ -177,6 +177,9 @@ Environment: no system Maven (wrapper used), Java 26 JDK (targets 17), Node 22, 
 
 ## Changelog
 
+### 2026-11-12 — Corporate tab renamed to Trades
+- The tab is now **Trades** at `/trades` (page `pages/Trades.tsx`), since it holds both the congress list and corporate insiders. `/corporate` redirects to `/trades` and keeps its query string, so old links like `/corporate?view=corporate` still work.
+
 ### 2026-11-12 — All trades moved to the Corporate tab
 - The full congress/President trade list (filters, sort, pagination) moved from Insiders into `components/AllTrades.tsx` and now lives on the Corporate tab. A sliding two-way toggle switches between **All trades** (default) and **Corporate trades** (SEC Form 4, `?view=corporate`). Each view keeps its own URL filters, and switching resets them.
 - Insiders is now an overview (hero, sector ring, latest filings, spotlight) with a "Browse all trades" link. Detail-page back links point to the Corporate tab.

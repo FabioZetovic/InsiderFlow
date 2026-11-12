@@ -48,7 +48,7 @@ export function SectorDetail() {
 
   return (
     <div className="stagger space-y-8">
-      <Link to="/corporate" className="inline-block text-sm text-ink-400 transition-colors hover:text-brand-300">
+      <Link to="/trades" className="inline-block text-sm text-ink-400 transition-colors hover:text-brand-300">
         Back to all trades
       </Link>
 

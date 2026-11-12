@@ -178,7 +178,7 @@ const VIEWS: { id: View; label: string; title: string; description: string }[] =
   },
 ];
 
-export function Corporate() {
+export function Trades() {
   const [searchParams, setSearchParams] = useSearchParams();
   const view: View = searchParams.get('view') === 'corporate' ? 'corporate' : 'all';
   const current = VIEWS.find((v) => v.id === view)!;

@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ProtectedRoute } from './auth/ProtectedRoute';
 import { Layout } from './components/Layout';
 import { Skeleton } from './components/ui';
@@ -13,10 +13,15 @@ const SectorDetail = lazy(() => import('./pages/SectorDetail').then((m) => ({ de
 const TickerDetail = lazy(() => import('./pages/TickerDetail').then((m) => ({ default: m.TickerDetail })));
 const Leaderboard = lazy(() => import('./pages/Leaderboard').then((m) => ({ default: m.Leaderboard })));
 const Signals = lazy(() => import('./pages/Signals').then((m) => ({ default: m.Signals })));
-const Corporate = lazy(() => import('./pages/Corporate').then((m) => ({ default: m.Corporate })));
+const Trades = lazy(() => import('./pages/Trades').then((m) => ({ default: m.Trades })));
 const Feed = lazy(() => import('./pages/Feed').then((m) => ({ default: m.Feed })));
 const Compare = lazy(() => import('./pages/Compare').then((m) => ({ default: m.Compare })));
 const MarketFlow = lazy(() => import('./pages/MarketFlow').then((m) => ({ default: m.MarketFlow })));
+
+function RedirectWithSearch({ to }: { to: string }) {
+  const { search } = useLocation();
+  return <Navigate to={to + search} replace />;
+}
 
 function PageFallback() {
   return (
@@ -42,7 +47,9 @@ export default function App() {
             <Route path="/insiders/ticker/:ticker" element={<TickerDetail />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/signals" element={<Signals />} />
-            <Route path="/corporate" element={<Corporate />} />
+            <Route path="/trades" element={<Trades />} />
+            {/* Old URL: keep links like /corporate?view=corporate working */}
+            <Route path="/corporate" element={<RedirectWithSearch to="/trades" />} />
             <Route path="/feed" element={<Feed />} />
             <Route path="/compare" element={<Compare />} />
             <Route path="/market" element={<MarketFlow />} />

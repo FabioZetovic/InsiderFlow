@@ -8,7 +8,7 @@ import { Logo } from './Logo';
 
 const NAV = [
   { to: '/insiders', label: 'Insiders' },
-  { to: '/corporate', label: 'Corporate' },
+  { to: '/trades', label: 'Trades' },
   { to: '/leaderboard', label: 'Leaderboard' },
   { to: '/signals', label: 'Signals' },
   { to: '/compare', label: 'Compare' },

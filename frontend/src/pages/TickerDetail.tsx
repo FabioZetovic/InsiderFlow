@@ -99,7 +99,7 @@ export function TickerDetail() {
   if (error) {
     return (
       <div className="space-y-4">
-        <Link to="/corporate" className="inline-block text-sm text-ink-400 transition-colors hover:text-brand-300">
+        <Link to="/trades" className="inline-block text-sm text-ink-400 transition-colors hover:text-brand-300">
           Back to all trades
         </Link>
         <ErrorState message={error} onRetry={load} />
@@ -109,7 +109,7 @@ export function TickerDetail() {
 
   return (
     <div className="stagger space-y-8">
-      <Link to="/corporate" className="inline-block text-sm text-ink-400 transition-colors hover:text-brand-300">
+      <Link to="/trades" className="inline-block text-sm text-ink-400 transition-colors hover:text-brand-300">
         Back to all trades
       </Link>
 

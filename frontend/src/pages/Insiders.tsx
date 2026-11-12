@@ -71,7 +71,7 @@ export function Insiders() {
       </div>
 
       <Link
-        to="/corporate"
+        to="/trades"
         className="lift group flex items-center justify-between bg-gradient-to-r from-brand-700/30 to-ink-900/60 px-6 py-5"
       >
         <span>
