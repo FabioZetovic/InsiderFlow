@@ -63,6 +63,7 @@ jobs:
           MONGODB_URI: mongodb://localhost:27017/insiderflow
           JWT_SECRET: ci-test-secret-key-that-is-long-enough-for-hmac-sha512-signing-in-ci
           SEC_ENABLED: 'false'
+          DEMO_MODE: 'false'   # Bruno security tests exercise real-credential auth
         run: |
           nohup java -jar target/*.jar > backend.log 2>&1 &
           for i in $(seq 1 40); do curl -sf http://localhost:8080/api/auth/login -o /dev/null -X POST -H 'Content-Type: application/json' -d '{}' && break || sleep 3; done

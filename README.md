@@ -64,7 +64,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173, register an account (min 8 chars, 1 number, 1 uppercase), and you're in.
+Open http://localhost:5173 and sign in with **any email and any password**. Demo mode is on by default, so no real credentials are needed. Set `DEMO_MODE=false` to require registered accounts.
 
 ## Data ingestion (first run)
 
@@ -99,6 +99,7 @@ It writes `data/senate_efd_transactions.json`, which the backend ingests on ever
 | `MONGODB_URI` | `mongodb://localhost:27017/insiderflow` | MongoDB connection |
 | `FINNHUB_API_KEY` | *(empty)* | Finnhub free-tier key |
 | `JWT_SECRET` | *(random per-process)* | HMAC secret for JWT signing; set for sessions that survive restarts |
+| `DEMO_MODE` | `true` | any email + any password signs in (no real credentials); `false` requires registered accounts |
 | `SEC_ENABLED` | `true` | toggle the SEC Form 4 (corporate insiders) ingestion |
 | `SEC_USER_AGENT` | descriptive default | SEC fair-access requires a User-Agent with contact info |
 

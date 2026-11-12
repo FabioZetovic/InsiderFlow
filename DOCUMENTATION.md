@@ -177,6 +177,10 @@ Environment: no system Maven (wrapper used), Java 26 JDK (targets 17), Node 22, 
 
 ## Changelog
 
+### 2026-11-12 — Demo mode on by default
+- `insiderflow.auth.demo-mode` (`DEMO_MODE`) now defaults to `true` in `application.properties`, `AuthService` and `docker-compose.yml`, so anyone running the public project signs in with any email and password. CI sets `DEMO_MODE=false` so the Bruno security tests still exercise real-credential auth.
+- The login and register error fallbacks no longer say "is the backend running?". The demo-mode banner uses the brand color.
+
 ### 2026-11-12 — Visual redesign: color system
 - **Design tokens** in `frontend/src/index.css` (`@theme`): `ink` navy-slate neutrals; **primary `brand` indigo** (`#5b57e8`/`#7472f8`) for nav, buttons, links, focus and the logo; **secondary cyan** (`#22b5d2`) for informational tags (earnings, exchanges, BMO); **accent amber** (`#e9a323`) for highlights (hot tickers, LATE flags, warnings); semantic **`up`/`down`** green/red for buys/gains and sells/losses only.
 - Branding no longer shares green with "buy". Party colors (D blue, R red) are unchanged; Independent is neutral now that violet is gone.

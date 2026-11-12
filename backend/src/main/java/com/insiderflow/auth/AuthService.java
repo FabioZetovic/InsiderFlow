@@ -23,7 +23,7 @@ public class AuthService {
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService,
                        @Value("${insiderflow.auth.registration-enabled:true}") boolean registrationEnabled,
-                       @Value("${insiderflow.auth.demo-mode:false}") boolean demoMode) {
+                       @Value("${insiderflow.auth.demo-mode:true}") boolean demoMode) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;

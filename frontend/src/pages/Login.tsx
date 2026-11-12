@@ -31,7 +31,7 @@ export function Login() {
       navigate('/insiders');
     } catch (err) {
       const axiosErr = err as AxiosError<ApiError>;
-      setError(axiosErr.response?.data?.message ?? 'Login failed — is the backend running?');
+      setError(axiosErr.response?.data?.message ?? 'Sign in failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -52,7 +52,7 @@ export function Login() {
         >
           <h1 className="text-lg font-semibold text-ink-100">Sign in</h1>
           {demoMode && (
-            <div className="flex items-start gap-2 rounded-md bg-up-500/10 ring-1 ring-up-500/30 px-3 py-2 text-sm text-up-300">
+            <div className="flex items-start gap-2 rounded-md bg-brand-500/10 ring-1 ring-brand-500/30 px-3 py-2 text-sm text-brand-300">
               <Sparkles className="mt-0.5 h-4 w-4 shrink-0" />
               <span>Demo mode — sign in with <strong>any email and any password</strong> to explore.</span>
             </div>

@@ -55,7 +55,7 @@ export function Register() {
       const axiosErr = err as AxiosError<ApiError>;
       const data = axiosErr.response?.data;
       const fieldError = data?.fieldErrors ? Object.values(data.fieldErrors)[0] : undefined;
-      setError(fieldError ?? data?.message ?? 'Registration failed — is the backend running?');
+      setError(fieldError ?? data?.message ?? 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
