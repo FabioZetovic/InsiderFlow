@@ -5,6 +5,7 @@ import { getCorporateInsiders } from '../api';
 import type { InsiderTrade, PagedInsiders } from '../types';
 import { Pagination } from '../components/Pagination';
 import { Card, EmptyState, ErrorState, formatMoney, PageHeader, TableSkeleton } from '../components/ui';
+import { AllTrades } from '../components/AllTrades';
 
 function InsiderTypeBadge({ type }: { type: InsiderTrade['transactionType'] }) {
   const styles: Record<string, string> = {
@@ -20,7 +21,8 @@ function InsiderTypeBadge({ type }: { type: InsiderTrade['transactionType'] }) {
   );
 }
 
-export function Corporate() {
+/** SEC Form 4 table with its own ticker / side filters (kept in the URL). */
+function CorporateTrades() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [data, setData] = useState<PagedInsiders | null>(null);
@@ -54,12 +56,8 @@ export function Corporate() {
   useEffect(() => load(), [load]);
 
   return (
-    <div className="stagger space-y-8">
-      <PageHeader
-        title="Corporate Insiders"
-        description="SEC Form 4 filings: company officers, directors, and 10% owners trading their own stock. Limited to companies Congress also trades, so you can compare both."
-      >
-        <div className="flex flex-wrap items-center gap-2">
+    <section>
+        <div className="mb-3 flex flex-wrap items-center gap-2">
           <input
             defaultValue={ticker}
             onKeyDown={(e) => {
@@ -82,7 +80,6 @@ export function Corporate() {
             ))}
           </div>
         </div>
-      </PageHeader>
 
       <Card>
         {loading && !data ? (
@@ -155,9 +152,70 @@ export function Corporate() {
             />
           </>
         ) : (
-          <EmptyState message="No corporate insider trades yet — the SEC Form 4 ingest may still be running." />
+          <EmptyState message="No corporate insider trades yet. The SEC Form 4 ingest may still be running." />
         )}
       </Card>
+    </section>
+  );
+}
+
+type View = 'all' | 'corporate';
+
+const VIEWS: { id: View; label: string; title: string; description: string }[] = [
+  {
+    id: 'all',
+    label: 'All trades',
+    title: 'All Trades',
+    description:
+      'Every stock trade disclosed by members of Congress and the President. Filter by member, sector, chamber, side, ticker or date.',
+  },
+  {
+    id: 'corporate',
+    label: 'Corporate trades',
+    title: 'Corporate Insiders',
+    description:
+      'SEC Form 4 filings: company officers, directors, and 10% owners trading their own stock. Limited to companies Congress also trades, so you can compare both.',
+  },
+];
+
+export function Corporate() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const view: View = searchParams.get('view') === 'corporate' ? 'corporate' : 'all';
+  const current = VIEWS.find((v) => v.id === view)!;
+
+  // Each view has its own filters, so switching starts from a clean URL.
+  const switchTo = (next: View) => {
+    if (next !== view) setSearchParams(next === 'all' ? {} : { view: next });
+  };
+
+  return (
+    <div className="stagger space-y-8">
+      <PageHeader title={current.title} description={current.description}>
+        <div role="tablist" aria-label="Trade source" className="relative flex bg-ink-900/80 p-1">
+          <span
+            aria-hidden
+            className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-brand-600 transition-transform duration-300 ease-out"
+            style={{ transform: view === 'corporate' ? 'translateX(100%)' : 'translateX(0)' }}
+          />
+          {VIEWS.map((v) => (
+            <button
+              key={v.id}
+              role="tab"
+              aria-selected={view === v.id}
+              onClick={() => switchTo(v.id)}
+              className={`relative z-10 w-40 px-4 py-2 text-sm font-semibold transition-colors duration-300 ${
+                view === v.id ? 'text-white' : 'text-ink-400 hover:text-ink-100'
+              }`}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
+      </PageHeader>
+
+      <div key={view} className="animate-rise">
+        {view === 'all' ? <AllTrades /> : <CorporateTrades />}
+      </div>
     </div>
   );
 }

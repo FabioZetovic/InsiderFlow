@@ -51,7 +51,7 @@ export function MemberDetail() {
 
   return (
     <div className="stagger space-y-8">
-      <Link to="/insiders" className="inline-block text-sm text-ink-400 transition-colors hover:text-brand-300">
+      <Link to="/corporate" className="inline-block text-sm text-ink-400 transition-colors hover:text-brand-300">
         Back to all trades
       </Link>
 

@@ -177,6 +177,10 @@ Environment: no system Maven (wrapper used), Java 26 JDK (targets 17), Node 22, 
 
 ## Changelog
 
+### 2026-11-12 — All trades moved to the Corporate tab
+- The full congress/President trade list (filters, sort, pagination) moved from Insiders into `components/AllTrades.tsx` and now lives on the Corporate tab. A sliding two-way toggle switches between **All trades** (default) and **Corporate trades** (SEC Form 4, `?view=corporate`). Each view keeps its own URL filters, and switching resets them.
+- Insiders is now an overview (hero, sector ring, latest filings, spotlight) with a "Browse all trades" link. Detail-page back links point to the Corporate tab.
+
 ### 2026-11-12 — Latest filings redesign
 - `DigestPanel` now opens with a KPI strip (new trades, buys, sells and est. volume, all counting up) plus an animated buy/sell balance bar and a live "since" pulse.
 - Biggest trades show a buy/sell accent bar, ticker, side and member. Most traded tickers are ranked with sector, volume and a proportional buy/sell split bar. Most active members get party-tinted initials avatars and a relative-volume bar. Bars grow in (`.bar-grow`).
