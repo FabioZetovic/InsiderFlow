@@ -5,7 +5,7 @@ import { getMemberSummary, getTrades } from '../api';
 import type { MemberSummary, PagedResponse, Trade } from '../types';
 import { TradeTable } from '../components/TradeTable';
 import { Pagination } from '../components/Pagination';
-import { Card, ErrorState, PartyBadge, Skeleton, TableSkeleton } from '../components/ui';
+import { Card, CountUp, ErrorState, PartyBadge, Skeleton, TableSkeleton } from "../components/ui";
 import { WatchButton } from '../components/WatchButton';
 
 const PIE_COLORS = [
@@ -84,7 +84,7 @@ export function MemberDetail() {
             </div>
             <div className="flex gap-8 text-sm">
               <div>
-                <div className="text-2xl font-bold text-ink-100">{summary.tradeCount.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-ink-100"><CountUp value={summary.tradeCount} /></div>
                 <div className="text-xs text-ink-500 uppercase tracking-wider">Trades</div>
               </div>
               {summary.estimatedVolume > 0 && (
@@ -96,11 +96,11 @@ export function MemberDetail() {
                 </div>
               )}
               <div>
-                <div className="text-2xl font-bold text-up-400">{summary.buyCount.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-up-400"><CountUp value={summary.buyCount} /></div>
                 <div className="text-xs text-ink-500 uppercase tracking-wider">Buys</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-down-400">{summary.sellCount.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-down-400"><CountUp value={summary.sellCount} /></div>
                 <div className="text-xs text-ink-500 uppercase tracking-wider">Sells</div>
               </div>
             </div>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getHotTickers, getMembers, getSectors, getSectorWeekly, getSpotlight, getTrades } from '../api';
+import { getHotTickers, getMembers, getSectors, getSectorWeekly, getSpotlight, getStatus, getTrades } from '../api';
 import type {
   Chamber,
   HotTicker,
@@ -18,7 +18,8 @@ import { Pagination } from '../components/Pagination';
 import { SectorWeeklyStrip } from '../components/SectorWeeklyStrip';
 import { SpotlightCards } from '../components/SpotlightCards';
 import { DigestPanel } from '../components/DigestPanel';
-import { Card, ErrorState, PageHeader, SectionLabel, TableSkeleton } from '../components/ui';
+import { Card, ErrorState, SectionLabel, TableSkeleton } from '../components/ui';
+import { InsidersHero } from '../components/Hero';
 
 export function Insiders() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -30,6 +31,7 @@ export function Insiders() {
   const [spotlight, setSpotlight] = useState<SpotlightMember[]>([]);
   const [spotlightLoading, setSpotlightLoading] = useState(true);
   const [hotTickers, setHotTickers] = useState<HotTicker[]>([]);
+  const [totalTrades, setTotalTrades] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -96,6 +98,11 @@ export function Insiders() {
         if (!cancelled) setHotTickers(data);
       })
       .catch(() => {});
+    getStatus()
+      .then((s) => {
+        if (!cancelled) setTotalTrades(s.totalTrades);
+      })
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
@@ -126,10 +133,7 @@ export function Insiders() {
 
   return (
     <div className="stagger space-y-10">
-      <PageHeader
-        title="Insiders"
-        description="Stock trades disclosed by members of Congress and the President, updated daily."
-      />
+      <InsidersHero totalTrades={totalTrades} members={members.length} sectors={sectors.length} />
 
       <SectorWeeklyStrip sectors={sectorWeekly} loading={sectorWeeklyLoading} />
 

@@ -15,7 +15,7 @@ import { getCorporateForTicker, getTickerDetail } from '../api';
 import type { InsiderTrade, TickerDetail as TickerDetailData } from '../types';
 import { TradeTable } from '../components/TradeTable';
 import { WatchButton } from '../components/WatchButton';
-import { Card, ErrorState, formatMoney, PartyBadge, Skeleton } from '../components/ui';
+import { Card, CountUp, ErrorState, formatMoney, PartyBadge, Skeleton } from '../components/ui';
 
 interface ChartPoint {
   date: string;
@@ -133,15 +133,15 @@ export function TickerDetail() {
             </div>
             <div className="flex gap-8">
               <div>
-                <div className="text-2xl font-bold text-ink-100">{detail.tradeCount.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-ink-100"><CountUp value={detail.tradeCount} /></div>
                 <div className="text-[10px] uppercase tracking-wider text-ink-500">Congress trades</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-up-400">{detail.buyCount.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-up-400"><CountUp value={detail.buyCount} /></div>
                 <div className="text-[10px] uppercase tracking-wider text-ink-500">Buys</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-down-400">{detail.sellCount.toLocaleString()}</div>
+                <div className="text-2xl font-bold text-down-400"><CountUp value={detail.sellCount} /></div>
                 <div className="text-[10px] uppercase tracking-wider text-ink-500">Sells</div>
               </div>
             </div>

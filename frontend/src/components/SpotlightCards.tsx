@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import { chamberLabel, type SpotlightMember } from '../types';
-import { PartyBadge, Skeleton, TypeBadge } from './ui';
+import { CountUp, PartyBadge, Skeleton, TypeBadge } from './ui';
 
 /** Party-flavored tint per featured member. */
 const ACCENTS: Record<string, { bg: string; text: string; chip: string }> = {
@@ -51,11 +51,11 @@ function SpotlightCard({ member }: { member: SpotlightMember }) {
         {member.found && (
           <div className="ml-auto flex shrink-0 gap-4 text-right">
             <div>
-              <div className="text-lg font-bold text-up-400">{member.buyCount.toLocaleString()}</div>
+              <div className="text-lg font-bold text-up-400"><CountUp value={member.buyCount} /></div>
               <div className="text-[10px] uppercase tracking-wider text-ink-500">Buys</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-down-400">{member.sellCount.toLocaleString()}</div>
+              <div className="text-lg font-bold text-down-400"><CountUp value={member.sellCount} /></div>
               <div className="text-[10px] uppercase tracking-wider text-ink-500">Sells</div>
             </div>
           </div>

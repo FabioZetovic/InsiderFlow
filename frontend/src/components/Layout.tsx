@@ -46,6 +46,27 @@ function useNavIndicator(pathname: string) {
   return { navRef, box };
 }
 
+/** Appears after scrolling down a screen; smooth-scrolls back to the top. */
+function BackToTop() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setShow(window.scrollY > window.innerHeight);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  return (
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      className={`fixed right-6 bottom-6 z-30 bg-brand-600 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-black/40 transition-all duration-300 hover:bg-brand-500 ${
+        show ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-4 opacity-0'
+      }`}
+    >
+      Back to top
+    </button>
+  );
+}
+
 export function Layout() {
   const { user, logout } = useAuth();
   const location = useLocation();
@@ -118,18 +139,47 @@ export function Layout() {
         <Outlet />
       </main>
 
-      <footer className="bg-ink-950/60 px-4 py-4">
-        <div className="max-w-screen-2xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs text-ink-500">
-          <span>
-            {status
-              ? `${status.totalTrades.toLocaleString()} trades · last ingest ${formatInstant(status.lastIngestAt)} · senate scraper ${
-                  senateScraper?.updatedAt ? formatInstant(senateScraper.updatedAt) : 'not run'
-                }`
-              : 'InsiderFlow'}
-          </span>
-          <span>Data: House/Senate STOCK Act filings, OGE 278-T, Finnhub, Yahoo Finance</span>
+      <footer className="mt-12 bg-ink-950/70 px-4 pt-10 pb-6">
+        <div className="max-w-screen-2xl mx-auto">
+          <div className="flex flex-wrap items-start justify-between gap-8">
+            <div className="max-w-sm">
+              <Logo />
+              <p className="mt-3 text-sm leading-relaxed text-ink-400">
+                Public stock-trading disclosures from Congress, the President and corporate insiders,
+                in one place.
+              </p>
+            </div>
+            <nav className="grid grid-cols-2 gap-x-12 gap-y-2 text-sm">
+              {NAV.map((item) => (
+                <Link key={item.to} to={item.to} className="text-ink-400 transition-colors hover:text-brand-300">
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            <div className="text-sm text-ink-400">
+              <div className="text-xs font-semibold uppercase tracking-[0.1em] text-ink-500">Sources</div>
+              <ul className="mt-2 space-y-1">
+                <li>House and Senate STOCK Act filings</li>
+                <li>OGE Form 278-T</li>
+                <li>SEC Form 4 (EDGAR)</li>
+                <li>Finnhub, Yahoo Finance</li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-2 text-xs text-ink-600 sm:pr-36">
+            <span>
+              {status
+                ? `${status.totalTrades.toLocaleString()} trades · last ingest ${formatInstant(status.lastIngestAt)} · senate scraper ${
+                    senateScraper?.updatedAt ? formatInstant(senateScraper.updatedAt) : 'not run'
+                  }`
+                : 'InsiderFlow'}
+            </span>
+            <span>Not investment advice. Disclosures can lag trades by up to 45 days.</span>
+          </div>
         </div>
       </footer>
+
+      <BackToTop />
     </div>
   );
 }

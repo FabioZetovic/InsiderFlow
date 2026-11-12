@@ -1,4 +1,39 @@
+import { useEffect, useRef, useState } from 'react';
 import { partyInitial, type Party, type TransactionType } from '../types';
+
+/** Number that counts up from 0 (ease-out) when it first renders. */
+export function CountUp({
+  value,
+  duration = 1200,
+  format = (n: number) => Math.round(n).toLocaleString(),
+}: {
+  value: number;
+  duration?: number;
+  format?: (n: number) => string;
+}) {
+  const [shown, setShown] = useState(0);
+  const from = useRef(0);
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setShown(value);
+      return;
+    }
+    const start = performance.now();
+    const origin = from.current;
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const next = origin + (value - origin) * eased;
+      setShown(next);
+      from.current = next;
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value, duration]);
+  return <>{format(shown)}</>;
+}
 
 /** Compact USD formatter: 1234567 -> "$1.2M", 4500 -> "$4.5K". */
 export function formatMoney(value: number | null | undefined): string {
@@ -146,6 +181,7 @@ export function PageHeader({
   return (
     <div className="flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
+        <span aria-hidden className="mb-3 block h-1 w-10 bg-gradient-to-r from-brand-500 to-accent-400" />
         <h1 className="text-3xl font-bold tracking-tight text-ink-50">{title}</h1>
         {description && <p className="mt-1.5 max-w-3xl text-sm text-ink-400">{description}</p>}
       </div>

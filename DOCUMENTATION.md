@@ -177,6 +177,12 @@ Environment: no system Maven (wrapper used), Java 26 JDK (targets 17), Node 22, 
 
 ## Changelog
 
+### 2026-11-12 — Hero, footer and finishing touches
+- **Insiders hero** (`components/Hero.tsx`): headline, short pitch, live counts (trades tracked from `/api/status`, members, sectors) that count up, two calls to action, and an animated SVG illustration (Capitol line art, growing volume bars, a trend line that draws up to an amber arrow).
+- **`CountUp`** (`ui.tsx`): eased number animation, also used for the member, ticker and spotlight buy/sell/trade counts.
+- **Page titles** get a short brand-to-amber accent bar. The body background adds a faint dot grid and a warm corner glow.
+- **Footer**: logo, blurb, site links, data sources, freshness line and a disclaimer. A **Back to top** button appears after scrolling one screen.
+
 ### 2026-11-12 — Layout, motion and brand overhaul
 - **Logo**: new SVG mark (magnifier over the Capitol dome, trend arrow, volume bars) in `components/Logo.tsx` (`LogoMark`, `Logo` lockup), used in the header and on the auth pages. `public/favicon.svg` is the same mark on a navy tile.
 - **Motion** (`index.css`): page entrance (`animate-rise`, keyed on route), staggered sections (`stagger`), cascading table rows and list items (`rows-in`), hover lift (`lift`), shimmer skeletons, a sliding nav indicator, and animated Recharts charts. All of it respects `prefers-reduced-motion`.
