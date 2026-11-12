@@ -177,6 +177,15 @@ Environment: no system Maven (wrapper used), Java 26 JDK (targets 17), Node 22, 
 
 ## Changelog
 
+### 2026-11-12 — Layout, motion and brand overhaul
+- **Logo**: new SVG mark (magnifier over the Capitol dome, trend arrow, volume bars) in `components/Logo.tsx` (`LogoMark`, `Logo` lockup), used in the header and on the auth pages. `public/favicon.svg` is the same mark on a navy tile.
+- **Motion** (`index.css`): page entrance (`animate-rise`, keyed on route), staggered sections (`stagger`), cascading table rows and list items (`rows-in`), hover lift (`lift`), shimmer skeletons, a sliding nav indicator, and animated Recharts charts. All of it respects `prefers-reduced-motion`.
+- **Sector ring** (`SectorWeeklyStrip`): replaces the scrollbar strip. Tiles rotate continuously right to left and bend away on a virtual cylinder at the edges. They can be dragged either way with momentum, and rotation pauses on hover. A drag never triggers a tile click.
+- **Flat surfaces**: `Card` is now a single-tone section with no border and no rounded corners (`plain` drops the background). All borders, dividers, rings and radii were removed app-wide. Inputs are filled rather than outlined. Tables keep their structure with soft zebra rows and no lines.
+- **Grouped layouts**: Insiders puts Latest filings and Spotlight in one row. Leaderboard has a "Top alpha" side column. Feed puts the followed members and tickers beside the feed. Member detail puts the sector and ticker panels beside the trades. Ticker detail puts the chart beside member activity and the trades beside the SEC Form 4 insiders. Sector detail puts the chart beside the trades. Market Flow puts the heatmap beside the S&P 500 and events, with earnings in day columns. Signals uses two columns from `lg`.
+- **No emoji or decorative icons**: nav, headings, banners, flags and spotlight are text-only. The star watch toggle is now a Follow / Following button. Filing links, pagination and back links are words. Only the search, dropdown and sort-direction glyphs remain.
+- New `ui.tsx` helpers: `PageHeader`, `SectionLabel`, `Stat`.
+
 ### 2026-11-12 — Demo mode on by default
 - `insiderflow.auth.demo-mode` (`DEMO_MODE`) now defaults to `true` in `application.properties`, `AuthService` and `docker-compose.yml`, so anyone running the public project signs in with any email and password. CI sets `DEMO_MODE=false` so the Bruno security tests still exercise real-credential auth.
 - The login and register error fallbacks no longer say "is the backend running?". The demo-mode banner uses the brand color.

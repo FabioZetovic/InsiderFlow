@@ -3,19 +3,19 @@ import type { SectorFlow } from '../types';
 /** Green/red background whose intensity scales with the magnitude of the daily move. */
 function heatColor(changePercent: number): string {
   const intensity = Math.min(Math.abs(changePercent) / 2.5, 1); // saturate at ±2.5%
-  const alpha = 0.12 + intensity * 0.55;
+  const alpha = 0.1 + intensity * 0.45;
   return changePercent >= 0
-    ? `rgba(16, 185, 129, ${alpha.toFixed(2)})`
-    : `rgba(239, 68, 68, ${alpha.toFixed(2)})`;
+    ? `rgba(34, 182, 115, ${alpha.toFixed(2)})`
+    : `rgba(229, 72, 77, ${alpha.toFixed(2)})`;
 }
 
 export function SectorHeatmap({ flows }: { flows: SectorFlow[] }) {
   return (
-    <div className="flex flex-wrap justify-center gap-2 p-4">
+    <div className="stagger grid grid-cols-2 gap-2 px-5 pb-5 sm:grid-cols-3 lg:grid-cols-4">
       {flows.map((flow) => (
         <div
           key={flow.symbol}
-          className="w-44 shrink-0 rounded-md p-3 ring-1 ring-white/5"
+          className="lift p-3"
           style={{ background: heatColor(flow.changePercent) }}
         >
           <div className="flex items-baseline justify-between">

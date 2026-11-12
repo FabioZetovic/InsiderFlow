@@ -1,4 +1,3 @@
-import { AlertTriangle, CalendarClock, Clock, Landmark } from 'lucide-react';
 import { partyInitial, type Party, type TransactionType } from '../types';
 
 /** Compact USD formatter: 1234567 -> "$1.2M", 4500 -> "$4.5K". */
@@ -11,7 +10,9 @@ export function formatMoney(value: number | null | undefined): string {
   return `$${value.toFixed(0)}`;
 }
 
-/** Small icon badges for the accountability/context flags on a trade. */
+const FLAG = 'inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold tracking-wide';
+
+/** Small text badges for the accountability/context flags on a trade. */
 export function TradeFlags({
   lateDisclosure,
   committeeConflict,
@@ -27,28 +28,25 @@ export function TradeFlags({
     <span className="inline-flex items-center gap-1 align-middle">
       {lateDisclosure && (
         <span
-          className="inline-flex items-center rounded bg-accent-500/15 px-1 py-0.5 text-[10px] font-semibold text-accent-400 ring-1 ring-accent-500/30"
+          className={`${FLAG} bg-accent-500/15 text-accent-300`}
           title={`Disclosed late${lagDays ? ` (${lagDays} days after the trade; STOCK Act allows 45)` : ''}`}
         >
-          <Clock className="mr-0.5 h-2.5 w-2.5" />
           LATE
         </span>
       )}
       {committeeConflict && (
         <span
-          className="inline-flex items-center rounded bg-brand-500/15 px-1 py-0.5 text-[10px] font-semibold text-brand-300 ring-1 ring-brand-500/30"
-          title={`Potential conflict — member sits on ${committeeConflict}, which oversees this sector`}
+          className={`${FLAG} bg-brand-500/15 text-brand-300`}
+          title={`Potential conflict: member sits on ${committeeConflict}, which oversees this sector`}
         >
-          <Landmark className="mr-0.5 h-2.5 w-2.5" />
           COMMITTEE
         </span>
       )}
       {nearEarnings && (
         <span
-          className="inline-flex items-center rounded bg-secondary-500/15 px-1 py-0.5 text-[10px] font-semibold text-secondary-400 ring-1 ring-secondary-500/30"
+          className={`${FLAG} bg-secondary-500/15 text-secondary-300`}
           title="Traded within ~2 weeks before the company's earnings report"
         >
-          <CalendarClock className="mr-0.5 h-2.5 w-2.5" />
           EARNINGS
         </span>
       )}
@@ -57,7 +55,7 @@ export function TradeFlags({
 }
 
 export function Skeleton({ className = '' }: { className?: string }) {
-  return <div className={`animate-pulse rounded bg-ink-800/80 ${className}`} />;
+  return <div className={`shimmer ${className}`} />;
 }
 
 export function TableSkeleton({ rows = 10 }: { rows?: number }) {
@@ -72,13 +70,12 @@ export function TableSkeleton({ rows = 10 }: { rows?: number }) {
 
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
-      <AlertTriangle className="w-8 h-8 text-accent-500" />
+    <div className="animate-fade flex flex-col items-center justify-center gap-3 py-12 text-center">
       <p className="text-sm text-ink-400 max-w-md">{message}</p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="px-4 py-1.5 text-sm rounded-md bg-ink-800 hover:bg-ink-700 text-ink-200 transition-colors"
+          className="px-4 py-1.5 text-sm bg-ink-800 hover:bg-ink-700 text-ink-200"
         >
           Retry
         </button>
@@ -88,17 +85,17 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
 }
 
 export function EmptyState({ message }: { message: string }) {
-  return <div className="py-12 text-center text-sm text-ink-500">{message}</div>;
+  return <div className="animate-fade py-12 text-center text-sm text-ink-500">{message}</div>;
 }
 
 export function TypeBadge({ type }: { type: TransactionType }) {
   const styles: Record<TransactionType, string> = {
-    BUY: 'bg-up-500/15 text-up-400 ring-up-500/30',
-    SELL: 'bg-down-500/15 text-down-400 ring-down-500/30',
-    EXCHANGE: 'bg-secondary-500/15 text-secondary-400 ring-secondary-500/30',
+    BUY: 'bg-up-500/15 text-up-400',
+    SELL: 'bg-down-500/15 text-down-400',
+    EXCHANGE: 'bg-secondary-500/15 text-secondary-400',
   };
   return (
-    <span className={`inline-flex px-2 py-0.5 rounded text-xs font-semibold ring-1 ${styles[type]}`}>
+    <span className={`inline-flex px-2 py-0.5 text-xs font-semibold ${styles[type]}`}>
       {type}
     </span>
   );
@@ -110,13 +107,13 @@ export function PartyBadge({ party }: { party: Party | null | undefined }) {
     return null;
   }
   const styles: Record<string, string> = {
-    D: 'bg-blue-500/15 text-blue-400 ring-blue-500/30',
-    R: 'bg-down-500/15 text-down-400 ring-down-500/30',
-    I: 'bg-ink-500/20 text-ink-200 ring-ink-400/30',
+    D: 'bg-blue-500/15 text-blue-400',
+    R: 'bg-down-500/15 text-down-400',
+    I: 'bg-ink-500/20 text-ink-200',
   };
   return (
     <span
-      className={`inline-flex h-4.5 min-w-4.5 items-center justify-center rounded px-1 text-[10px] font-bold ring-1 ${styles[initial]}`}
+      className={`inline-flex h-4.5 min-w-4.5 items-center justify-center px-1 text-[10px] font-bold ${styles[initial]}`}
       title={party ?? undefined}
     >
       {initial}
@@ -128,7 +125,7 @@ export function SectorChip({ sector, onClick }: { sector: string; onClick?: () =
   return (
     <button
       onClick={onClick}
-      className="inline-flex px-2 py-0.5 rounded-full text-xs bg-ink-800 text-ink-300 hover:bg-ink-700 hover:text-ink-100 transition-colors max-w-44 truncate"
+      className="inline-flex px-2 py-0.5 text-xs text-ink-400 hover:text-brand-300 max-w-44 truncate"
       title={sector}
     >
       {sector}
@@ -136,15 +133,67 @@ export function SectorChip({ sector, onClick }: { sector: string; onClick?: () =
   );
 }
 
-export function Card({ title, children, className = '' }: { title?: string; children: React.ReactNode; className?: string }) {
+/** Page title + optional description and right-hand slot. */
+export function PageHeader({
+  title,
+  description,
+  children,
+}: {
+  title: React.ReactNode;
+  description?: React.ReactNode;
+  children?: React.ReactNode;
+}) {
   return (
-    <section className={`rounded-xl border border-ink-800 bg-ink-900/70 shadow-sm shadow-black/20 ${className}`}>
+    <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="min-w-0">
+        <h1 className="text-3xl font-bold tracking-tight text-ink-50">{title}</h1>
+        {description && <p className="mt-1.5 max-w-3xl text-sm text-ink-400">{description}</p>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+/** Small uppercase label used above sections. */
+export function SectionLabel({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  return (
+    <h2 className={`mb-3 text-xs font-semibold uppercase tracking-[0.1em] text-ink-400 ${className}`}>{children}</h2>
+  );
+}
+
+/**
+ * A flat section: one solid tone laid on the page background. No border, no corners.
+ * `plain` drops the background entirely so content sits straight on the page.
+ */
+export function Card({
+  title,
+  children,
+  className = '',
+  plain = false,
+}: {
+  title?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+  plain?: boolean;
+}) {
+  return (
+    <section className={`${plain ? '' : 'bg-ink-900/60'} ${className}`}>
       {title && (
-        <h2 className="px-4 py-3 border-b border-ink-800 text-xs font-semibold text-ink-400 uppercase tracking-[0.08em]">
+        <h2 className={`${plain ? 'pb-3' : 'px-5 pt-4 pb-2'} text-xs font-semibold uppercase tracking-[0.1em] text-ink-400`}>
           {title}
         </h2>
       )}
       {children}
     </section>
+  );
+}
+
+/** Big number + caption used in page headers. */
+export function Stat({ value, label, tone = 'text-ink-50' }: { value: React.ReactNode; label: string; tone?: string }) {
+  return (
+    <div>
+      <div className={`text-2xl font-bold ${tone}`}>{value}</div>
+      <div className="text-[10px] uppercase tracking-[0.1em] text-ink-500">{label}</div>
+    </div>
   );
 }

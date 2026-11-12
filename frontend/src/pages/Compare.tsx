@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { GitCompare, X } from 'lucide-react';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { compareMembers, getMembers } from '../api';
 import type { MemberComparison, MemberStats } from '../types';
-import { Card, ErrorState, formatMoney, PartyBadge, Skeleton } from '../components/ui';
+import { Card, ErrorState, formatMoney, PageHeader, PartyBadge, Skeleton } from '../components/ui';
 import { chamberLabel } from '../types';
 
 const PIE_COLORS = ['#7472f8', '#22b5d2', '#f6bd4f', '#3fd38c', '#f4707a', '#b1b4ff', '#93e4f3', '#ffd78f', '#86e3b4', '#ffa3aa', '#6b7592'];
@@ -51,23 +50,19 @@ export function Compare() {
   }, [query, allMembers, selected]);
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="flex items-center gap-2 text-2xl font-bold text-ink-100">
-          <GitCompare className="h-6 w-6 text-brand-400" />
-          Compare Members
-        </h1>
-        <p className="mt-1 text-sm text-ink-500">Put up to 3 members side by side.</p>
-      </div>
-
-      {/* Selector */}
-      <Card>
-        <div className="flex flex-wrap items-center gap-2 p-4">
+    <div className="stagger space-y-8">
+      <PageHeader title="Compare Members" description="Put up to 3 members side by side.">
+        {/* Selector */}
+        <div className="flex flex-wrap items-center gap-2">
           {selected.map((m) => (
-            <span key={m} className="inline-flex items-center gap-1 rounded bg-ink-800 px-2 py-1 text-sm text-ink-200">
+            <span key={m} className="animate-fade inline-flex items-center gap-2 bg-ink-800/70 px-2.5 py-1 text-sm text-ink-200">
               {m}
-              <button onClick={() => setSelected(selected.filter((x) => x !== m))} className="text-ink-500 hover:text-down-400">
-                <X className="h-3.5 w-3.5" />
+              <button
+                onClick={() => setSelected(selected.filter((x) => x !== m))}
+                className="text-xs text-ink-500 hover:text-down-400"
+                title={`Remove ${m}`}
+              >
+                Remove
               </button>
             </span>
           ))}
@@ -77,10 +72,10 @@ export function Compare() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Add a member…"
-                className="rounded-md border border-ink-700 bg-ink-900 px-3 py-1.5 text-sm text-ink-200 focus:border-brand-500 focus:outline-none"
+                className="bg-ink-900/80 px-3 py-1.5 text-sm text-ink-200 focus:ring-1 focus:ring-brand-500/60 focus:outline-none"
               />
               {suggestions.length > 0 && (
-                <ul className="absolute z-20 mt-1 w-64 rounded-md border border-ink-700 bg-ink-900 shadow-xl">
+                <ul className="animate-fade absolute z-20 mt-1 w-64 bg-ink-800 shadow-2xl shadow-black/50">
                   {suggestions.map((m) => (
                     <li key={m.member}>
                       <button
@@ -101,7 +96,7 @@ export function Compare() {
             </div>
           )}
         </div>
-      </Card>
+      </PageHeader>
 
       {loading ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -112,10 +107,10 @@ export function Compare() {
       ) : error ? (
         <ErrorState message="Failed to load comparison." />
       ) : data && data.members.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="stagger grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {data.members.map((m) => (
-            <Card key={m.member}>
-              <div className="border-b border-ink-800 p-4">
+            <Card key={m.member} className="lift">
+              <div className="p-4">
                 <div className="flex items-center gap-1.5">
                   <h2 className="font-semibold text-ink-100">{m.member}</h2>
                   <PartyBadge party={m.party} />
@@ -147,11 +142,11 @@ export function Compare() {
                         <Cell key={s.sector} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke="none" />
                       ))}
                     </Pie>
-                    <Tooltip contentStyle={{ background: '#161c2d', border: '1px solid #343c55', borderRadius: 8 }} itemStyle={{ color: '#e7ebf3' }} />
+                    <Tooltip contentStyle={{ background: '#161c2d', border: 'none', borderRadius: 0 }} itemStyle={{ color: '#e7ebf3' }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <ul className="border-t border-ink-800 p-3 text-sm">
+              <ul className="rows-in p-4 text-sm">
                 {m.topTickers.slice(0, 5).map((t) => (
                   <li key={t.ticker} className="flex justify-between py-0.5">
                     <span className="font-mono text-ink-300">{t.ticker}</span>

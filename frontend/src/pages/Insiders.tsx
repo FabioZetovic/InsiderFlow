@@ -18,7 +18,7 @@ import { Pagination } from '../components/Pagination';
 import { SectorWeeklyStrip } from '../components/SectorWeeklyStrip';
 import { SpotlightCards } from '../components/SpotlightCards';
 import { DigestPanel } from '../components/DigestPanel';
-import { Card, ErrorState, TableSkeleton } from '../components/ui';
+import { Card, ErrorState, PageHeader, SectionLabel, TableSkeleton } from '../components/ui';
 
 export function Insiders() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -112,7 +112,7 @@ export function Insiders() {
         if (!cancelled) setTrades(data);
       })
       .catch(() => {
-        if (!cancelled) setError('Failed to load trades. Check that the backend is running and ingestion has completed.');
+        if (!cancelled) setError('Failed to load trades. Please try again in a moment.');
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -125,40 +125,41 @@ export function Insiders() {
   useEffect(() => loadTrades(), [loadTrades]);
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-ink-100">Insiders</h1>
-        <p className="mt-1 text-sm text-ink-500">
-          Stock trades disclosed by members of Congress and the President, updated daily.
-        </p>
-      </div>
+    <div className="stagger space-y-10">
+      <PageHeader
+        title="Insiders"
+        description="Stock trades disclosed by members of Congress and the President, updated daily."
+      />
 
       <SectorWeeklyStrip sectors={sectorWeekly} loading={sectorWeeklyLoading} />
 
-      <DigestPanel />
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        <div className="xl:col-span-2">
+          <DigestPanel />
+        </div>
+        <section>
+          <SectionLabel>Spotlight</SectionLabel>
+          <SpotlightCards members={spotlight} loading={spotlightLoading} />
+        </section>
+      </div>
 
       <section>
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-500">Spotlight</h2>
-        <SpotlightCards members={spotlight} loading={spotlightLoading} />
-      </section>
-
-      <section>
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-500">All trades</h2>
+        <SectionLabel>All trades</SectionLabel>
+        <div className="mb-3">
+          <FilterBar
+            members={members}
+            sectors={sectors}
+            member={member}
+            sector={sector}
+            chamber={chamber}
+            type={type}
+            search={search}
+            from={from}
+            to={to}
+            onChange={(patch) => updateParams(patch as Record<string, string>)}
+          />
+        </div>
         <Card>
-          <div className="border-b border-ink-800 px-4 py-3">
-            <FilterBar
-              members={members}
-              sectors={sectors}
-              member={member}
-              sector={sector}
-              chamber={chamber}
-              type={type}
-              search={search}
-              from={from}
-              to={to}
-              onChange={(patch) => updateParams(patch as Record<string, string>)}
-            />
-          </div>
           {error ? (
             <ErrorState message={error} onRetry={loadTrades} />
           ) : trades ? (

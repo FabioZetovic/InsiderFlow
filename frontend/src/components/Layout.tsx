@@ -1,16 +1,24 @@
-import { useEffect, useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
-import { Activity, AlertTriangle, Building2, GitCompare, LandPlot, LogOut, Radar, Star, TrendingUp, Trophy } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext';
 import { getStatus } from '../api';
 import type { AppStatus } from '../types';
+import { Logo } from './Logo';
+
+const NAV = [
+  { to: '/insiders', label: 'Insiders' },
+  { to: '/corporate', label: 'Corporate' },
+  { to: '/leaderboard', label: 'Leaderboard' },
+  { to: '/signals', label: 'Signals' },
+  { to: '/compare', label: 'Compare' },
+  { to: '/feed', label: 'Feed' },
+  { to: '/market', label: 'Market' },
+];
 
 const tabClass = ({ isActive }: { isActive: boolean }) =>
-  `flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-    isActive
-      ? 'bg-brand-500/15 text-brand-300 ring-1 ring-inset ring-brand-500/30'
-      : 'text-ink-400 hover:text-ink-100 hover:bg-ink-800/60'
+  `relative z-10 whitespace-nowrap px-3 py-1.5 text-sm font-medium transition-colors duration-300 ${
+    isActive ? 'text-ink-50' : 'text-ink-400 hover:text-ink-100'
   }`;
 
 function formatInstant(value: string | null): string {
@@ -22,9 +30,27 @@ function formatInstant(value: string | null): string {
   }
 }
 
+/** Sliding pill behind the active nav item. */
+function useNavIndicator(pathname: string) {
+  const navRef = useRef<HTMLElement>(null);
+  const [box, setBox] = useState<{ left: number; width: number } | null>(null);
+  useLayoutEffect(() => {
+    const measure = () => {
+      const active = navRef.current?.querySelector<HTMLAnchorElement>('a.active');
+      setBox(active ? { left: active.offsetLeft, width: active.offsetWidth } : null);
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [pathname]);
+  return { navRef, box };
+}
+
 export function Layout() {
   const { user, logout } = useAuth();
+  const location = useLocation();
   const [status, setStatus] = useState<AppStatus | null>(null);
+  const { navRef, box } = useNavIndicator(location.pathname);
 
   useEffect(() => {
     let cancelled = false;
@@ -44,57 +70,31 @@ export function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-ink-800/80 bg-ink-950/80 sticky top-0 z-20 backdrop-blur-md">
-        <div className="max-w-screen-2xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-brand-500 to-brand-700 shadow-sm shadow-brand-700/40">
-                <TrendingUp className="w-4 h-4 text-white" />
-              </span>
-              <span className="font-semibold text-ink-50 tracking-tight">
-                Insider<span className="text-brand-400">Flow</span>
-              </span>
-            </div>
-            <nav className="flex items-center gap-0.5">
-              <NavLink to="/insiders" className={tabClass}>
-                <LandPlot className="w-4 h-4" />
-                <span className="hidden lg:inline">Insiders</span>
-              </NavLink>
-              <NavLink to="/corporate" className={tabClass}>
-                <Building2 className="w-4 h-4" />
-                <span className="hidden lg:inline">Corporate</span>
-              </NavLink>
-              <NavLink to="/leaderboard" className={tabClass}>
-                <Trophy className="w-4 h-4" />
-                <span className="hidden lg:inline">Leaderboard</span>
-              </NavLink>
-              <NavLink to="/signals" className={tabClass}>
-                <Radar className="w-4 h-4" />
-                <span className="hidden lg:inline">Signals</span>
-              </NavLink>
-              <NavLink to="/compare" className={tabClass}>
-                <GitCompare className="w-4 h-4" />
-                <span className="hidden lg:inline">Compare</span>
-              </NavLink>
-              <NavLink to="/feed" className={tabClass}>
-                <Star className="w-4 h-4" />
-                <span className="hidden lg:inline">Feed</span>
-              </NavLink>
-              <NavLink to="/market" className={tabClass}>
-                <Activity className="w-4 h-4" />
-                <span className="hidden lg:inline">Market</span>
-              </NavLink>
+      <header className="sticky top-0 z-20 bg-ink-950/75 backdrop-blur-md">
+        <div className="max-w-screen-2xl mx-auto px-4 h-16 flex items-center justify-between gap-6">
+          <div className="flex min-w-0 items-center gap-8">
+            <Link to="/insiders" className="shrink-0">
+              <Logo />
+            </Link>
+            <nav ref={navRef} className="no-scrollbar relative flex items-center overflow-x-auto">
+              {box && (
+                <span
+                  aria-hidden
+                  className="absolute top-1/2 h-8 -translate-y-1/2 bg-brand-500/15 transition-all duration-300 ease-out"
+                  style={{ left: box.left, width: box.width }}
+                />
+              )}
+              {NAV.map((item) => (
+                <NavLink key={item.to} to={item.to} className={tabClass}>
+                  {item.label}
+                </NavLink>
+              ))}
             </nav>
           </div>
-          <div className="flex items-center gap-3 text-sm text-ink-400">
+          <div className="flex shrink-0 items-center gap-4 text-sm text-ink-400">
             <span className="hidden sm:inline">{user?.username}</span>
-            <button
-              onClick={logout}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-ink-900 hover:text-ink-200 transition-colors"
-              title="Log out"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Logout</span>
+            <button onClick={logout} className="font-medium transition-colors hover:text-ink-100">
+              Log out
             </button>
           </div>
         </div>
@@ -102,26 +102,24 @@ export function Layout() {
 
       {/* Data pipeline warnings — silence must not look like success */}
       {status?.senateStale && (
-        <div className="border-b border-accent-500/30 bg-accent-500/10 px-4 py-2 text-center text-xs text-accent-400">
-          <AlertTriangle className="mr-1.5 inline h-3.5 w-3.5" />
-          Senate data may be stale — the eFD scraper hasn't run in over 3 days. Run{' '}
-          <code className="rounded bg-ink-900 px-1">node scripts/senate-efd-scraper.js</code> to refresh.
+        <div className="animate-fade bg-accent-500/10 px-4 py-2 text-center text-xs text-accent-300">
+          Senate data may be stale. The eFD scraper hasn't run in over 3 days. Run{' '}
+          <code className="bg-ink-900 px-1">node scripts/senate-efd-scraper.js</code> to refresh.
         </div>
       )}
       {status?.newTrumpFilingDetected && (
-        <div className="border-b border-secondary-500/30 bg-secondary-500/10 px-4 py-2 text-center text-xs text-secondary-400">
-          <AlertTriangle className="mr-1.5 inline h-3.5 w-3.5" />
-          A new presidential 278-T filing dated {status.newTrumpFilingDate} was detected on OGE —
+        <div className="animate-fade bg-secondary-500/10 px-4 py-2 text-center text-xs text-secondary-300">
+          A new presidential 278-T filing dated {status.newTrumpFilingDate} was detected on OGE.
           Trump's trades here may be incomplete until the dataset updates.
         </div>
       )}
 
-      <main className="flex-1 max-w-screen-2xl w-full mx-auto px-4 py-6">
+      <main key={location.pathname} className="animate-rise flex-1 max-w-screen-2xl w-full mx-auto px-4 py-8">
         <Outlet />
       </main>
 
-      <footer className="border-t border-ink-800/60 px-4 py-3">
-        <div className="max-w-screen-2xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs text-ink-600">
+      <footer className="bg-ink-950/60 px-4 py-4">
+        <div className="max-w-screen-2xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs text-ink-500">
           <span>
             {status
               ? `${status.totalTrades.toLocaleString()} trades · last ingest ${formatInstant(status.lastIngestAt)} · senate scraper ${

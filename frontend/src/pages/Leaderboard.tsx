@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
-import { Trophy } from 'lucide-react';
 import { getLeaderboard } from '../api';
 import { chamberLabel, type LeaderboardResponse } from '../types';
-import { Card, EmptyState, ErrorState, PartyBadge, TableSkeleton } from '../components/ui';
+import { Card, EmptyState, ErrorState, PageHeader, PartyBadge, SectionLabel, TableSkeleton } from '../components/ui';
 
 function ReturnCell({ value }: { value: number }) {
   const up = value >= 0;
@@ -56,48 +55,75 @@ export function Leaderboard() {
   }, [data?.computing]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="flex items-center gap-2 text-2xl font-bold text-ink-100">
-          <Trophy className="h-6 w-6 text-accent-400" />
-          Trader Leaderboard
-        </h1>
-        <p className="mt-1 text-sm text-ink-500">
-          Members ranked by the average return of their disclosed buys from the last 12 months,
-          measured to the latest close. Only members with 5+ scored buys are ranked.
-          {data?.computedAt && (
-            <span className="ml-1 text-ink-600">
-              Computed {format(parseISO(data.computedAt), 'MMM d, HH:mm')}.
-            </span>
-          )}
-        </p>
-      </div>
+    <div className="stagger space-y-8">
+      <PageHeader
+        title="Trader Leaderboard"
+        description={
+          <>
+            Members ranked by the average return of their disclosed buys from the last 12 months,
+            measured to the latest close.
+            {data?.computedAt && (
+              <span className="ml-1 text-ink-500">Computed {format(parseISO(data.computedAt), 'MMM d, HH:mm')}.</span>
+            )}
+          </>
+        }
+      />
 
-      <Card>
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-4">
+      <aside className="stagger space-y-3 xl:order-2">
+        <SectionLabel>Top alpha</SectionLabel>
+        {(data?.entries ?? [])
+          .slice()
+          .sort((a, b) => b.avgAlphaPercent - a.avgAlphaPercent)
+          .slice(0, 3)
+          .map((e, i) => (
+            <Link
+              key={e.member}
+              to={`/insiders/member/${encodeURIComponent(e.member)}`}
+              className="lift block bg-ink-900/60 p-4"
+            >
+              <div className="flex items-baseline justify-between">
+                <span className="text-xs font-semibold text-ink-500">No. {i + 1}</span>
+                <ReturnCell value={e.avgAlphaPercent} />
+              </div>
+              <div className="mt-1 flex items-center gap-1.5">
+                <span className="truncate font-semibold text-ink-50">{e.member}</span>
+                <PartyBadge party={e.party} />
+              </div>
+              <div className="text-xs text-ink-500">{e.scoredBuys} scored buys</div>
+            </Link>
+          ))}
+        <p className="pt-2 text-xs leading-relaxed text-ink-500">
+          Alpha is the return in excess of the S&amp;P 500 over the same holding window. Only members
+          with 5 or more scored buys are ranked.
+        </p>
+      </aside>
+
+      <Card className="xl:col-span-3 xl:order-1">
         {loading && !data ? (
           <TableSkeleton rows={10} />
         ) : error ? (
           <ErrorState message={error} onRetry={load} />
         ) : data && data.entries.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="rows-in w-full text-sm">
               <thead>
                 <tr className="text-left text-xs uppercase tracking-wider text-ink-500">
-                  <th className="px-4 py-3 font-medium">#</th>
-                  <th className="px-4 py-3 font-medium">Member</th>
-                  <th className="px-4 py-3 font-medium text-right">Scored buys</th>
-                  <th className="px-4 py-3 font-medium text-right">Avg return</th>
-                  <th className="px-4 py-3 font-medium text-right" title="Return in excess of the S&P 500 over the same holding period">
+                  <th className="px-4 pt-4 pb-3 font-medium">#</th>
+                  <th className="px-4 pt-4 pb-3 font-medium">Member</th>
+                  <th className="px-4 pt-4 pb-3 font-medium text-right">Scored buys</th>
+                  <th className="px-4 pt-4 pb-3 font-medium text-right">Avg return</th>
+                  <th className="px-4 pt-4 pb-3 font-medium text-right" title="Return in excess of the S&P 500 over the same holding period">
                     Alpha vs SPY
                   </th>
-                  <th className="px-4 py-3 font-medium text-right">Best trade</th>
+                  <th className="px-4 pt-4 pb-3 font-medium text-right">Best trade</th>
                 </tr>
               </thead>
               <tbody>
                 {data.entries.map((entry, i) => (
                   <tr
                     key={entry.member}
-                    className="border-t border-ink-800/60 even:bg-ink-900/40 hover:bg-ink-800/40 transition-colors"
+                    className="even:bg-ink-950/30 transition-colors hover:bg-brand-500/[0.06]"
                   >
                     <td className="px-4 py-2.5 text-ink-500">{i + 1}</td>
                     <td className="px-4 py-2.5">
@@ -149,6 +175,7 @@ export function Leaderboard() {
           <EmptyState message="No ranked members yet — the leaderboard computes after the next ingest." />
         )}
       </Card>
+      </div>
     </div>
   );
 }

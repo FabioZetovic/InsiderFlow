@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Star } from 'lucide-react';
 import { useWatchlist } from '../watchlist/WatchlistContext';
 
-/** Star toggle to follow/unfollow a member or ticker. */
+/** Follow / Following toggle for a member or ticker. */
 export function WatchButton({
   type,
   value,
@@ -15,7 +14,7 @@ export function WatchButton({
   const { isWatched, toggle } = useWatchlist();
   const [busy, setBusy] = useState(false);
   const watched = isWatched(type, value);
-  const iconClass = size === 'sm' ? 'h-4 w-4' : 'h-5 w-5';
+  const pad = size === 'sm' ? 'px-2 py-0.5 text-[11px]' : 'px-3 py-1 text-xs';
 
   return (
     <button
@@ -31,11 +30,13 @@ export function WatchButton({
       }}
       disabled={busy}
       title={watched ? 'Unfollow' : 'Follow'}
-      className={`transition-colors ${
-        watched ? 'text-accent-400 hover:text-accent-300' : 'text-ink-600 hover:text-ink-300'
+      className={`${pad} font-sans font-semibold tracking-normal ${
+        watched
+          ? 'bg-brand-500/20 text-brand-300 hover:bg-down-500/15 hover:text-down-300'
+          : 'bg-ink-800/80 text-ink-300 hover:bg-brand-600 hover:text-white'
       } ${busy ? 'opacity-50' : ''}`}
     >
-      <Star className={iconClass} fill={watched ? 'currentColor' : 'none'} />
+      {watched ? 'Following' : 'Follow'}
     </button>
   );
 }

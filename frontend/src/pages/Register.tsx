@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
-import { Check, TrendingUp, X } from 'lucide-react';
+import { Logo } from "../components/Logo";
 import { register } from '../api';
 import { useAuth } from '../auth/AuthContext';
 import type { ApiError } from '../types';
@@ -11,7 +11,7 @@ const PASSWORD_REGEX = /^(?=.*[0-9])(?=.*[A-Z]).{8,}$/;
 function Rule({ ok, label }: { ok: boolean; label: string }) {
   return (
     <li className={`flex items-center gap-2 text-xs ${ok ? 'text-up-400' : 'text-ink-500'}`}>
-      {ok ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+      <span className={`h-1.5 w-1.5 rounded-full transition-colors ${ok ? "bg-up-400" : "bg-ink-600"}`} />
       {label}
     </li>
   );
@@ -62,24 +62,21 @@ export function Register() {
   }
 
   const inputClass =
-    'mt-1 w-full rounded-md bg-ink-950 border border-ink-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500';
+    'mt-1 w-full bg-ink-950/80 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:ring-1 focus:ring-brand-500/60';
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 shadow-md shadow-brand-700/40"><TrendingUp className="w-5 h-5 text-white" /></span>
-          <span className="text-2xl font-bold text-ink-100 tracking-tight">
-            Insider<span className="text-brand-400">Flow</span>
-          </span>
+      <div className="animate-rise w-full max-w-sm">
+        <div className="mb-10 flex justify-center">
+          <Logo size="lg" />
         </div>
         <form
           onSubmit={handleSubmit}
-          className="rounded-lg border border-ink-800 bg-ink-900/50 p-6 space-y-4"
+          className="bg-ink-900/70 p-8 space-y-5"
         >
           <h1 className="text-lg font-semibold text-ink-100">Create account</h1>
           {error && (
-            <div className="rounded-md bg-down-500/10 ring-1 ring-down-500/30 px-3 py-2 text-sm text-down-400">
+            <div className="bg-down-500/10 px-3 py-2 text-sm text-down-400">
               {error}
             </div>
           )}
@@ -108,7 +105,7 @@ export function Register() {
           <button
             type="submit"
             disabled={loading || !valid}
-            className="w-full rounded-md bg-brand-600 hover:bg-brand-500 disabled:opacity-50 px-3 py-2 text-sm font-semibold text-white transition-colors"
+            className="w-full bg-brand-600 hover:bg-brand-500 disabled:opacity-50 px-3 py-2 text-sm font-semibold text-white transition-colors"
           >
             {loading ? 'Creating account…' : 'Create account'}
           </button>

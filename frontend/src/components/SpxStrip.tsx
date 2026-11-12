@@ -8,7 +8,7 @@ export function SpxStrip({ spx }: { spx: SpxResponse }) {
   const sparkData = spx.sparkline.map((value, i) => ({ i, value }));
 
   return (
-    <div className="flex items-center gap-6 px-4 py-3">
+    <div className="flex flex-wrap items-end gap-x-5 gap-y-3 px-5 pb-5">
       <div>
         <div className="text-xs text-ink-500 uppercase tracking-wider">S&amp;P 500 (SPY)</div>
         <div className="text-2xl font-bold text-ink-100">${spx.price.toFixed(2)}</div>
@@ -19,16 +19,16 @@ export function SpxStrip({ spx }: { spx: SpxResponse }) {
         {spx.changePercent.toFixed(2)}%)
       </div>
       {sparkData.length > 1 && (
-        <div className="h-12 flex-1 min-w-32 max-w-md">
+        <div className="h-14 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={sparkData}>
               <YAxis hide domain={['dataMin', 'dataMax']} />
-              <Line type="monotone" dataKey="value" stroke={color} strokeWidth={1.5} dot={false} isAnimationActive={false} />
+              <Line type="monotone" dataKey="value" stroke={color} strokeWidth={1.5} dot={false} animationDuration={1000} />
             </LineChart>
           </ResponsiveContainer>
         </div>
       )}
-      <div className="ml-auto text-xs text-ink-600">
+      <div className="w-full text-xs text-ink-600">
         Updated {format(parseISO(spx.updatedAt), 'HH:mm:ss')}
       </div>
     </div>

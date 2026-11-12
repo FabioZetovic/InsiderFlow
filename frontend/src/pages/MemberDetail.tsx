@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { getMemberSummary, getTrades } from '../api';
 import type { MemberSummary, PagedResponse, Trade } from '../types';
 import { TradeTable } from '../components/TradeTable';
@@ -51,9 +50,9 @@ export function MemberDetail() {
   }
 
   return (
-    <div className="space-y-4">
-      <Link to="/insiders" className="inline-flex items-center gap-1.5 text-sm text-ink-400 hover:text-ink-200">
-        <ArrowLeft className="w-4 h-4" /> All trades
+    <div className="stagger space-y-8">
+      <Link to="/insiders" className="inline-block text-sm text-ink-400 transition-colors hover:text-brand-300">
+        Back to all trades
       </Link>
 
       {loading && !summary ? (
@@ -68,7 +67,7 @@ export function MemberDetail() {
         <>
           <div className="flex items-end justify-between flex-wrap gap-3">
             <div>
-              <h1 className="flex items-center gap-2 text-2xl font-bold text-ink-100">
+              <h1 className="flex items-center gap-3 text-3xl font-bold tracking-tight text-ink-50">
                 {summary.member}
                 <PartyBadge party={summary.party} />
                 <WatchButton type="member" value={summary.member} />
@@ -83,7 +82,7 @@ export function MemberDetail() {
                 {summary.state ? ` · ${summary.state}` : ''}
               </p>
             </div>
-            <div className="flex gap-6 text-sm">
+            <div className="flex gap-8 text-sm">
               <div>
                 <div className="text-2xl font-bold text-ink-100">{summary.tradeCount.toLocaleString()}</div>
                 <div className="text-xs text-ink-500 uppercase tracking-wider">Trades</div>
@@ -106,69 +105,87 @@ export function MemberDetail() {
               </div>
             </div>
           </div>
+        </>
+      ) : null}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        {summary && (
+          <aside className="stagger space-y-6">
             <Card title="Sector breakdown">
-              <div className="h-72 p-2">
+              <div className="h-64 p-2">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={summary.sectorBreakdown}
                       dataKey="count"
                       nameKey="sector"
-                      innerRadius={55}
-                      outerRadius={90}
+                      innerRadius={50}
+                      outerRadius={82}
                       paddingAngle={2}
+                      animationDuration={900}
                     >
                       {summary.sectorBreakdown.map((entry, i) => (
                         <Cell key={entry.sector} fill={PIE_COLORS[i % PIE_COLORS.length]} stroke="none" />
                       ))}
                     </Pie>
                     <Tooltip
-                      contentStyle={{ background: '#161c2d', border: '1px solid #343c55', borderRadius: 8 }}
+                      contentStyle={{ background: '#161c2d', border: 'none', borderRadius: 0 }}
                       itemStyle={{ color: '#e7ebf3' }}
                     />
-                    <Legend wrapperStyle={{ fontSize: 12 }} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
+              <ul className="rows-in grid grid-cols-2 gap-x-4 gap-y-1.5 px-5 pb-5 text-xs">
+                {summary.sectorBreakdown.slice(0, 8).map((s, i) => (
+                  <li key={s.sector} className="flex items-center gap-2 text-ink-400">
+                    <span className="h-2 w-2 shrink-0" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
+                    <span className="truncate">{s.sector}</span>
+                    <span className="ml-auto text-ink-500">{s.count}</span>
+                  </li>
+                ))}
+              </ul>
             </Card>
 
             <Card title="Top tickers">
-              <ul className="divide-y divide-ink-800/70">
+              <ul className="rows-in pb-3">
                 {summary.topTickers.map((t, i) => (
-                  <li key={t.ticker} className="flex items-center justify-between px-4 py-2.5 text-sm">
-                    <span className="flex items-center gap-3">
-                      <span className="text-xs text-ink-600 w-4">{i + 1}</span>
-                      <span className="font-mono font-semibold text-ink-100">{t.ticker}</span>
-                    </span>
-                    <span className="text-ink-400">{t.count} trades</span>
+                  <li key={t.ticker}>
+                    <Link
+                      to={`/insiders/ticker/${encodeURIComponent(t.ticker)}`}
+                      className="flex items-center justify-between px-5 py-2 text-sm transition-colors hover:bg-brand-500/[0.06]"
+                    >
+                      <span className="flex items-center gap-3">
+                        <span className="w-4 text-xs text-ink-600">{i + 1}</span>
+                        <span className="font-mono font-semibold text-ink-100">{t.ticker}</span>
+                      </span>
+                      <span className="text-ink-400">{t.count} trades</span>
+                    </Link>
                   </li>
                 ))}
                 {summary.topTickers.length === 0 && (
-                  <li className="px-4 py-6 text-sm text-ink-500 text-center">No ticker-linked trades</li>
+                  <li className="px-5 py-6 text-center text-sm text-ink-500">No ticker-linked trades</li>
                 )}
               </ul>
             </Card>
-          </div>
-        </>
-      ) : null}
+          </aside>
+        )}
 
-      <Card title="Trades">
-        {loading ? (
-          <TableSkeleton rows={8} />
-        ) : trades ? (
-          <>
-            <TradeTable trades={trades.content} hideMember />
-            <Pagination
-              page={trades.page}
-              totalPages={trades.totalPages}
-              totalElements={trades.totalElements}
-              onPageChange={setPage}
-            />
-          </>
-        ) : null}
-      </Card>
+        <Card title="Trades" className={summary ? 'xl:col-span-2' : 'xl:col-span-3'}>
+          {loading ? (
+            <TableSkeleton rows={8} />
+          ) : trades ? (
+            <>
+              <TradeTable trades={trades.content} hideMember />
+              <Pagination
+                page={trades.page}
+                totalPages={trades.totalPages}
+                totalElements={trades.totalElements}
+                onPageChange={setPage}
+              />
+            </>
+          ) : null}
+        </Card>
+      </div>
     </div>
   );
 }

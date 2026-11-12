@@ -12,10 +12,10 @@ const MEGA_CAPS = new Set([
 
 function HourBadge({ hour }: { hour: string | null }) {
   if (hour === 'bmo') {
-    return <span className="inline-flex px-1.5 py-0.5 rounded text-[11px] font-bold bg-secondary-500/15 text-secondary-400 ring-1 ring-secondary-500/30">BMO</span>;
+    return <span className="inline-flex px-1.5 py-0.5 text-[11px] font-bold bg-secondary-500/15 text-secondary-400">BMO</span>;
   }
   if (hour === 'amc') {
-    return <span className="inline-flex px-1.5 py-0.5 rounded text-[11px] font-bold bg-brand-500/15 text-brand-300 ring-1 ring-brand-500/30">AMC</span>;
+    return <span className="inline-flex px-1.5 py-0.5 text-[11px] font-bold bg-brand-500/15 text-brand-300">AMC</span>;
   }
   return <span className="text-xs text-ink-600">—</span>;
 }
@@ -23,7 +23,7 @@ function HourBadge({ hour }: { hour: string | null }) {
 export function EarningsList({ earnings }: { earnings: EarningsEvent[] }) {
   if (earnings.length === 0) {
     return (
-      <EmptyState message="No cached earnings for this week yet — set FINNHUB_API_KEY and restart the backend." />
+      <EmptyState message="No earnings cached for this week yet." />
     );
   }
 
@@ -36,7 +36,7 @@ export function EarningsList({ earnings }: { earnings: EarningsEvent[] }) {
   const days = [...byDay.keys()].sort();
 
   return (
-    <div className="divide-y divide-ink-800/70">
+    <div className="grid grid-cols-1 gap-px md:grid-cols-2 xl:grid-cols-5">
       {days.map((day) => {
         const list = (byDay.get(day) ?? []).slice().sort((a, b) => {
           const aMega = MEGA_CAPS.has(a.symbol) ? 0 : 1;
@@ -45,28 +45,28 @@ export function EarningsList({ earnings }: { earnings: EarningsEvent[] }) {
         });
         return (
           <div key={day}>
-            <div className="px-4 py-2 bg-ink-900 text-xs font-semibold text-ink-400 uppercase tracking-wider sticky top-0 z-10">
+            <div className="px-5 pt-2 pb-2 text-xs font-semibold text-ink-300">
               {format(parseISO(day), 'EEEE, MMM d')}
-              <span className="ml-2 text-ink-600 normal-case font-normal">{list.length} reports</span>
+              <span className="ml-2 font-normal text-ink-500">{list.length} reports</span>
             </div>
-            <ul className="divide-y divide-ink-800/40">
+            <ul className="rows-in max-h-96 overflow-y-auto pb-3">
               {list.slice(0, 40).map((entry) => {
                 const mega = MEGA_CAPS.has(entry.symbol);
                 return (
-                  <li key={entry.id} className="flex items-center gap-3 px-4 py-2 text-sm">
+                  <li key={entry.id} className="flex items-center gap-2 px-5 py-1.5 text-sm transition-colors hover:bg-brand-500/[0.06]">
                     <Link
                       to={`/insiders/ticker/${encodeURIComponent(entry.symbol)}`}
-                      className={`font-mono font-semibold w-20 shrink-0 hover:text-brand-400 transition-colors ${
+                      className={`font-mono font-semibold w-16 shrink-0 truncate hover:text-brand-400 transition-colors ${
                         mega ? 'text-accent-400' : 'text-ink-200'
                       }`}
                       title={`View ${entry.symbol}`}
                     >
                       {entry.symbol}
-                      {mega && <span className="ml-1 text-[10px] align-top">★</span>}
+                      {mega && <span className="ml-1.5 bg-accent-500/15 px-1 align-middle font-sans text-[9px] font-semibold text-accent-300">MEGA</span>}
                     </Link>
                     <HourBadge hour={entry.hour} />
-                    <span className="ml-auto text-ink-400 text-xs">
-                      EPS est: {entry.epsEstimate != null ? `$${entry.epsEstimate.toFixed(2)}` : '—'}
+                    <span className="ml-auto whitespace-nowrap text-[11px] text-ink-400">
+                      est {entry.epsEstimate != null ? `$${entry.epsEstimate.toFixed(2)}` : '—'}
                       {entry.epsActual != null && (
                         <span className={entry.epsActual >= (entry.epsEstimate ?? 0) ? 'text-up-400' : 'text-down-400'}>
                           {' '}· actual ${entry.epsActual.toFixed(2)}

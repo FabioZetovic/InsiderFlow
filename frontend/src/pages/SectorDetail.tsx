@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { getSectorTimeline, getTrades } from '../api';
 import type { PagedResponse, TimelinePoint, Trade } from '../types';
@@ -48,14 +47,15 @@ export function SectorDetail() {
   }
 
   return (
-    <div className="space-y-4">
-      <Link to="/insiders" className="inline-flex items-center gap-1.5 text-sm text-ink-400 hover:text-ink-200">
-        <ArrowLeft className="w-4 h-4" /> All trades
+    <div className="stagger space-y-8">
+      <Link to="/insiders" className="inline-block text-sm text-ink-400 transition-colors hover:text-brand-300">
+        Back to all trades
       </Link>
 
-      <h1 className="text-2xl font-bold text-ink-100">{sector}</h1>
+      <h1 className="text-3xl font-bold tracking-tight text-ink-50">{sector}</h1>
 
-      <Card title="Buy / sell volume over time">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-5">
+      <Card title="Buy and sell volume over time" className="xl:col-span-2">
         {loading && !timeline ? (
           <div className="p-4">
             <Skeleton className="h-64 w-full" />
@@ -68,21 +68,21 @@ export function SectorDetail() {
                 <XAxis dataKey="period" tick={{ fill: '#6b7592', fontSize: 11 }} stroke="#343c55" />
                 <YAxis tick={{ fill: '#6b7592', fontSize: 11 }} stroke="#343c55" allowDecimals={false} />
                 <Tooltip
-                  contentStyle={{ background: '#161c2d', border: '1px solid #343c55', borderRadius: 8 }}
+                  contentStyle={{ background: '#161c2d', border: 'none', borderRadius: 0 }}
                   itemStyle={{ color: '#e7ebf3' }}
                   labelStyle={{ color: '#8b95ad' }}
                   cursor={{ fill: 'rgba(255,255,255,0.04)' }}
                 />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="buyCount" name="Buys" fill="#22b673" radius={[2, 2, 0, 0]} />
-                <Bar dataKey="sellCount" name="Sells" fill="#e5484d" radius={[2, 2, 0, 0]} />
+                <Legend wrapperStyle={{ fontSize: 12 }} iconType="square" />
+                <Bar dataKey="buyCount" name="Buys" fill="#22b673" animationDuration={900} />
+                <Bar dataKey="sellCount" name="Sells" fill="#e5484d" animationDuration={900} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         )}
       </Card>
 
-      <Card title="Trades">
+      <Card title="Trades" className="xl:col-span-3">
         {loading ? (
           <TableSkeleton rows={8} />
         ) : trades ? (
@@ -97,6 +97,7 @@ export function SectorDetail() {
           </>
         ) : null}
       </Card>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState, useEffect } from 'react';
-import { ChevronDown, Search, XCircle } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
 import type { Chamber, MemberStats, SectorStats, TransactionType } from '../types';
 
 interface FilterBarProps {
@@ -33,13 +33,13 @@ function ToggleGroup<T extends string>({
   onChange: (value: T | '') => void;
 }) {
   return (
-    <div className="flex rounded-md overflow-hidden border border-ink-700 text-xs">
+    <div className="flex text-xs">
       {options.map((opt) => (
         <button
           key={opt.value}
           onClick={() => onChange(value === opt.value ? '' : opt.value)}
           className={`px-3 py-1.5 font-medium transition-colors ${
-            value === opt.value ? 'bg-brand-600 text-white' : 'bg-ink-900 text-ink-400 hover:text-ink-200'
+            value === opt.value ? 'bg-brand-600 text-white' : 'bg-ink-900/80 text-ink-400 hover:bg-ink-800 hover:text-ink-100'
           }`}
         >
           {opt.label}
@@ -87,12 +87,12 @@ export function FilterBar({ members, sectors, member, sector, chamber, type, sea
   }, [members, memberQuery]);
 
   const dateInputClass =
-    'rounded-md border border-ink-700 bg-ink-900 px-2 py-1.5 text-sm text-ink-300 hover:border-ink-600 focus:outline-none [color-scheme:dark]';
+    ' bg-ink-900/80 px-2 py-1.5 text-sm text-ink-300 hover:bg-ink-800/80 focus:outline-none [color-scheme:dark]';
 
   return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Ticker / company search */}
-      <div className="flex items-center gap-2 rounded-md border border-ink-700 bg-ink-900 px-3 py-1.5 hover:border-ink-600 focus-within:border-brand-500">
+      <div className="flex items-center gap-2 bg-ink-900/80 px-3 py-1.5 hover:bg-ink-800/80 focus-within:ring-1 focus-within:ring-brand-500/60">
         <Search className="h-4 w-4 shrink-0 text-ink-500" />
         <input
           value={searchDraft}
@@ -102,7 +102,7 @@ export function FilterBar({ members, sectors, member, sector, chamber, type, sea
         />
         {searchDraft && (
           <button onClick={() => setSearchDraft('')} className="text-ink-600 hover:text-ink-400">
-            <XCircle className="h-3.5 w-3.5" />
+            <span className="text-xs">Clear</span>
           </button>
         )}
       </div>
@@ -130,14 +130,14 @@ export function FilterBar({ members, sectors, member, sector, chamber, type, sea
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setMemberOpen((o) => !o)}
-          className="flex items-center gap-2 rounded-md border border-ink-700 bg-ink-900 px-3 py-1.5 text-sm text-ink-300 hover:border-ink-600 min-w-52 justify-between"
+          className="flex items-center gap-2 bg-ink-900/80 px-3 py-1.5 text-sm text-ink-300 hover:bg-ink-800/80 min-w-52 justify-between"
         >
           <span className="truncate">{member || 'All members'}</span>
           <ChevronDown className="w-4 h-4 text-ink-500 shrink-0" />
         </button>
         {memberOpen && (
-          <div className="absolute z-30 mt-1 w-72 rounded-md border border-ink-700 bg-ink-900 shadow-xl">
-            <div className="flex items-center gap-2 border-b border-ink-800 px-3 py-2">
+          <div className="animate-fade absolute z-30 mt-1 w-72 bg-ink-800 shadow-2xl shadow-black/50">
+            <div className="flex items-center gap-2 px-3 py-2">
               <Search className="w-4 h-4 text-ink-500" />
               <input
                 autoFocus
@@ -169,7 +169,7 @@ export function FilterBar({ members, sectors, member, sector, chamber, type, sea
                       setMemberOpen(false);
                       setMemberQuery('');
                     }}
-                    className="w-full px-3 py-1.5 text-left text-sm text-ink-200 hover:bg-ink-800 flex justify-between gap-2"
+                    className="w-full px-3 py-1.5 text-left text-sm text-ink-200 hover:bg-ink-700/60 flex justify-between gap-2"
                   >
                     <span className="truncate">{m.member}</span>
                     <span className="text-xs text-ink-500 shrink-0">{m.tradeCount}</span>
@@ -188,7 +188,7 @@ export function FilterBar({ members, sectors, member, sector, chamber, type, sea
       <select
         value={sector}
         onChange={(e) => onChange({ sector: e.target.value })}
-        className="rounded-md border border-ink-700 bg-ink-900 px-3 py-1.5 text-sm text-ink-300 hover:border-ink-600 focus:outline-none max-w-56"
+        className="bg-ink-900/80 px-3 py-1.5 text-sm text-ink-300 hover:bg-ink-800/80 focus:outline-none max-w-56"
       >
         <option value="">All sectors</option>
         {sectors.map((s) => (
@@ -222,7 +222,7 @@ export function FilterBar({ members, sectors, member, sector, chamber, type, sea
           onClick={() => onChange({ member: '', sector: '', chamber: '', type: '', search: '', from: '', to: '' })}
           className="flex items-center gap-1.5 text-xs text-ink-500 hover:text-ink-300 transition-colors"
         >
-          <XCircle className="w-4 h-4" />
+
           Clear all
         </button>
       )}

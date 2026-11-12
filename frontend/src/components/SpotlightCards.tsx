@@ -1,28 +1,23 @@
 import { useNavigate } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
-import { Star } from 'lucide-react';
 import { chamberLabel, type SpotlightMember } from '../types';
 import { PartyBadge, Skeleton, TypeBadge } from './ui';
 
-/** Accent styling per featured member (party-flavored). */
-const ACCENTS: Record<string, { ring: string; text: string; chip: string }> = {
+/** Party-flavored tint per featured member. */
+const ACCENTS: Record<string, { bg: string; text: string; chip: string }> = {
   'Nancy Pelosi': {
-    ring: 'ring-blue-500/40 bg-gradient-to-br from-blue-500/10 to-transparent',
+    bg: 'bg-gradient-to-br from-blue-500/12 via-ink-900/60 to-ink-900/60',
     text: 'text-blue-400',
     chip: 'bg-blue-500/15 text-blue-300',
   },
   'Donald Trump': {
-    ring: 'ring-down-500/40 bg-gradient-to-br from-down-500/10 to-transparent',
+    bg: 'bg-gradient-to-br from-down-500/12 via-ink-900/60 to-ink-900/60',
     text: 'text-down-400',
     chip: 'bg-down-500/15 text-down-300',
   },
 };
 
-const DEFAULT_ACCENT = {
-  ring: 'ring-ink-700 bg-ink-900/50',
-  text: 'text-ink-300',
-  chip: 'bg-ink-800 text-ink-300',
-};
+const DEFAULT_ACCENT = { bg: 'bg-ink-900/60', text: 'text-ink-300', chip: 'bg-ink-800 text-ink-300' };
 
 function initials(name: string): string {
   return name
@@ -37,17 +32,14 @@ function SpotlightCard({ member }: { member: SpotlightMember }) {
   const accent = ACCENTS[member.name] ?? DEFAULT_ACCENT;
 
   return (
-    <div className={`rounded-lg ring-1 p-4 ${accent.ring}`}>
+    <div className={`lift p-5 ${accent.bg}`}>
       <div className="flex items-center gap-3">
-        <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-bold ${accent.chip}`}
-        >
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ${accent.chip}`}>
           {initials(member.name)}
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
-            <Star className={`h-3.5 w-3.5 ${accent.text}`} fill="currentColor" />
-            <span className="truncate font-semibold text-ink-100">{member.name}</span>
+            <span className="truncate font-semibold text-ink-50">{member.name}</span>
             <PartyBadge party={member.party} />
           </div>
           <div className="text-xs text-ink-500">
@@ -72,13 +64,11 @@ function SpotlightCard({ member }: { member: SpotlightMember }) {
 
       {member.found ? (
         <>
-          <ul className="mt-3 space-y-1.5">
-            {member.recentTrades.map((trade) => (
+          <ul className="rows-in mt-4 space-y-2">
+            {member.recentTrades.slice(0, 3).map((trade) => (
               <li key={trade.id} className="flex items-center gap-2 text-sm">
                 <TypeBadge type={trade.transactionType} />
-                <span className="font-mono font-semibold text-ink-100 w-14 truncate">
-                  {trade.ticker ?? '—'}
-                </span>
+                <span className="w-14 truncate font-mono font-semibold text-ink-100">{trade.ticker ?? '—'}</span>
                 <span className="truncate text-xs text-ink-500">{trade.amountRange ?? ''}</span>
                 <span className="ml-auto shrink-0 text-xs text-ink-500">
                   {format(parseISO(trade.transactionDate), 'MMM d, yyyy')}
@@ -88,14 +78,14 @@ function SpotlightCard({ member }: { member: SpotlightMember }) {
           </ul>
           <button
             onClick={() => navigate(`/insiders/member/${encodeURIComponent(member.name)}`)}
-            className={`mt-3 text-xs font-medium hover:underline ${accent.text}`}
+            className={`mt-4 text-xs font-medium hover:underline ${accent.text}`}
           >
-            View all {member.tradeCount.toLocaleString()} trades →
+            View all {member.tradeCount.toLocaleString()} trades
           </button>
         </>
       ) : (
         <p className="mt-3 text-xs text-ink-500">
-          STOCK Act periodic transaction reports cover members of Congress — {member.name} has no
+          STOCK Act periodic transaction reports cover members of Congress. {member.name} has no
           filings in the House/Senate disclosure data.
         </p>
       )}
@@ -106,9 +96,9 @@ function SpotlightCard({ member }: { member: SpotlightMember }) {
 export function SpotlightCards({ members, loading }: { members: SpotlightMember[]; loading: boolean }) {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Skeleton className="h-48" />
-        <Skeleton className="h-48" />
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-1">
+        <Skeleton className="h-44" />
+        <Skeleton className="h-44" />
       </div>
     );
   }
@@ -116,7 +106,7 @@ export function SpotlightCards({ members, loading }: { members: SpotlightMember[
     return null;
   }
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div className="stagger grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-1">
       {members.map((m) => (
         <SpotlightCard key={m.name} member={m} />
       ))}

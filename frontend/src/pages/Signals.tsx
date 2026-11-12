@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AlertTriangle, Clock, Users } from 'lucide-react';
 import { getClusters, getLateFilers } from '../api';
 import type { Cluster, LateFiler } from '../types';
-import { Card, EmptyState, ErrorState, formatMoney, PartyBadge, TableSkeleton } from '../components/ui';
+import { Card, EmptyState, ErrorState, formatMoney, PageHeader, PartyBadge, TableSkeleton } from '../components/ui';
 
 function LateFilersCard() {
   const [rows, setRows] = useState<LateFiler[] | null>(null);
@@ -31,19 +30,19 @@ function LateFilersCard() {
         <EmptyState message="No late disclosures found." />
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="rows-in w-full text-sm">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wider text-ink-500">
-                <th className="px-4 py-2.5 font-medium">Member</th>
-                <th className="px-4 py-2.5 font-medium text-right">Late</th>
-                <th className="px-4 py-2.5 font-medium text-right">Late rate</th>
-                <th className="px-4 py-2.5 font-medium text-right">Avg lag</th>
-                <th className="px-4 py-2.5 font-medium text-right">Worst</th>
+                <th className="px-4 pt-4 pb-3 font-medium">Member</th>
+                <th className="px-4 pt-4 pb-3 font-medium text-right">Late</th>
+                <th className="px-4 pt-4 pb-3 font-medium text-right">Late rate</th>
+                <th className="px-4 pt-4 pb-3 font-medium text-right">Avg lag</th>
+                <th className="px-4 pt-4 pb-3 font-medium text-right">Worst</th>
               </tr>
             </thead>
             <tbody>
               {rows.slice(0, 30).map((r) => (
-                <tr key={r.member} className="border-t border-ink-800/60 even:bg-ink-900/40">
+                <tr key={r.member} className="even:bg-ink-950/30 transition-colors hover:bg-brand-500/[0.06]">
                   <td className="px-4 py-2">
                     <div className="flex items-center gap-1.5">
                       <Link
@@ -100,7 +99,7 @@ function ClustersCard() {
             <button
               key={d}
               onClick={() => setDirection(d)}
-              className={`rounded px-2 py-1 font-medium ${
+              className={`px-2 py-1 font-medium ${
                 direction === d ? 'bg-brand-600 text-white' : 'bg-ink-800 text-ink-400'
               }`}
             >
@@ -110,7 +109,7 @@ function ClustersCard() {
           <select
             value={days}
             onChange={(e) => setDays(Number(e.target.value))}
-            className="rounded border border-ink-700 bg-ink-900 px-2 py-1 text-ink-300"
+            className="bg-ink-900/80 px-2 py-1 text-ink-300"
           >
             <option value={30}>30d</option>
             <option value={90}>90d</option>
@@ -125,7 +124,7 @@ function ClustersCard() {
       ) : rows.length === 0 ? (
         <EmptyState message="No clusters in this window." />
       ) : (
-        <ul className="divide-y divide-ink-800/60">
+        <ul className="rows-in">
           {rows.map((c) => (
             <li key={`${c.ticker}-${c.direction}`} className="px-4 py-3">
               <div className="flex items-center gap-2">
@@ -135,20 +134,19 @@ function ClustersCard() {
                 >
                   {c.ticker}
                 </Link>
-                <span className="inline-flex items-center gap-1 rounded bg-ink-800 px-2 py-0.5 text-xs text-ink-300">
-                  <Users className="h-3 w-3" />
+                <span className="bg-brand-500/15 px-2 py-0.5 text-xs font-medium text-brand-300">
                   {c.memberCount} members
                 </span>
                 <span className="text-xs text-ink-500">{c.sector}</span>
                 <span className="ml-auto text-xs text-ink-500">
-                  {c.firstDate} → {c.lastDate} · {formatMoney(c.estimatedVolume)}
+                  {c.firstDate} to {c.lastDate} · {formatMoney(c.estimatedVolume)}
                 </span>
               </div>
               <div className="mt-1.5 flex flex-wrap gap-1.5">
                 {c.members.map((m, i) => (
                   <span
                     key={`${m.member}-${i}`}
-                    className="inline-flex items-center gap-1 rounded bg-ink-800/60 px-1.5 py-0.5 text-xs text-ink-300"
+                    className="inline-flex items-center gap-1 bg-ink-800/70 px-1.5 py-0.5 text-xs text-ink-300"
                   >
                     {m.member}
                     <PartyBadge party={m.party} />
@@ -165,23 +163,10 @@ function ClustersCard() {
 
 export function Signals() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="flex items-center gap-2 text-2xl font-bold text-ink-100">
-          <AlertTriangle className="h-6 w-6 text-accent-400" />
-          Signals
-        </h1>
-        <p className="mt-1 text-sm text-ink-500">
-          Accountability and pattern signals: who files late, and where members are piling in together.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="flex items-start gap-2">
-          <Clock className="mt-1 hidden h-0 w-0" />
-          <div className="w-full">
-            <LateFilersCard />
-          </div>
-        </div>
+    <div className="stagger space-y-8">
+      <PageHeader title="Signals" description="Accountability and pattern signals: who files late, and where members are piling in together." />
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
+        <LateFilersCard />
         <ClustersCard />
       </div>
     </div>
