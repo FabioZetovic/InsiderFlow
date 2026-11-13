@@ -5,6 +5,7 @@ import { useAuth } from '../auth/AuthContext';
 import { getStatus } from '../api';
 import type { AppStatus } from '../types';
 import { Logo } from './Logo';
+import { TradeDrawer } from './TradeDrawer';
 
 const NAV = [
   { to: '/insiders', label: 'Insiders' },
@@ -180,6 +181,7 @@ export function Layout() {
       </footer>
 
       <BackToTop />
+      <TradeDrawer />
     </div>
   );
 }

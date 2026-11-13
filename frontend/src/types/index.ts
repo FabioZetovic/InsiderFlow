@@ -370,3 +370,32 @@ export interface WatchlistDto {
   members: string[];
   tickers: string[];
 }
+
+// ---------- Trade detail / position ----------
+
+export interface PositionTrade {
+  id: string;
+  transactionDate: string | null;
+  transactionType: TransactionType;
+  amountRange: string | null;
+  amountMid: number | null;
+  /** Close on (or just before) the trade date. */
+  price: number | null;
+}
+
+export interface TradePosition {
+  trade: Trade;
+  ticker: string | null;
+  entryPrice: number | null;
+  latestPrice: number | null;
+  latestDate: string | null;
+  changeSinceTradePercent: number | null;
+  /** Estimated: closes on each buy date, weighted by disclosed amount midpoints. */
+  avgBuyPrice: number | null;
+  avgBuyReturnPercent: number | null;
+  buyCount: number;
+  sellCount: number;
+  pricedBuys: number;
+  memberTrades: PositionTrade[];
+  priceHistory: PricePoint[];
+}

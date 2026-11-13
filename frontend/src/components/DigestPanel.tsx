@@ -4,6 +4,7 @@ import { format, parseISO } from 'date-fns';
 import { getDigest } from '../api';
 import { partyInitial, type Digest, type Party } from '../types';
 import { CountUp, formatMoney, PartyBadge, Skeleton } from './ui';
+import { useOpenTrade } from './TradeDrawer';
 
 const PARTY_AVATAR: Record<string, string> = {
   D: 'bg-blue-500/20 text-blue-300',
@@ -35,6 +36,7 @@ function ColumnTitle({ children }: { children: React.ReactNode }) {
 
 export function DigestPanel() {
   const navigate = useNavigate();
+  const openTrade = useOpenTrade();
   const [digest, setDigest] = useState<Digest | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -119,11 +121,8 @@ export function DigestPanel() {
               return (
                 <li key={t.id}>
                   <button
-                    onClick={() =>
-                      t.ticker
-                        ? navigate(`/insiders/ticker/${encodeURIComponent(t.ticker)}`)
-                        : navigate(`/insiders/member/${encodeURIComponent(t.member)}`)
-                    }
+                    onClick={() => openTrade(t.id)}
+                    title="Open trade detail"
                     className="group flex w-full items-center gap-3 py-1.5 pr-1 text-left transition-colors hover:bg-ink-800/40"
                   >
                     <span className={`h-8 w-1 shrink-0 ${buy ? 'bg-up-500' : t.transactionType === 'SELL' ? 'bg-down-500' : 'bg-secondary-500'}`} />

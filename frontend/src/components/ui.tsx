@@ -213,7 +213,7 @@ export function Card({
   plain?: boolean;
 }) {
   return (
-    <section className={`${plain ? '' : 'bg-ink-900/60'} ${className}`}>
+    <section className={`min-w-0 ${plain ? "" : "bg-ink-900/60"} ${className}`}>
       {title && (
         <h2 className={`${plain ? 'pb-3' : 'px-5 pt-4 pb-2'} text-xs font-semibold uppercase tracking-[0.1em] text-ink-400`}>
           {title}

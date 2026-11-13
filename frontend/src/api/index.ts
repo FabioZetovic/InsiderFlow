@@ -1,5 +1,6 @@
 import { client } from './client';
 import type {
+  TradePosition,
   AppStatus,
   AuthResponse,
   Cluster,
@@ -69,6 +70,11 @@ export async function getTrades(filters: TradeFilters): Promise<PagedResponse<Tr
 
 export async function getTickerDetail(ticker: string): Promise<TickerDetail> {
   const { data } = await client.get<TickerDetail>(`/trades/ticker/${encodeURIComponent(ticker)}`);
+  return data;
+}
+
+export async function getTradePosition(id: string): Promise<TradePosition> {
+  const { data } = await client.get<TradePosition>(`/trades/position/${encodeURIComponent(id)}`);
   return data;
 }
 

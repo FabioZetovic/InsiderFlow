@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import { chamberLabel, type SpotlightMember } from '../types';
 import { CountUp, PartyBadge, Skeleton, TypeBadge } from './ui';
+import { useOpenTrade } from './TradeDrawer';
 
 /** Party-flavored tint per featured member. */
 const ACCENTS: Record<string, { bg: string; text: string; chip: string }> = {
@@ -29,6 +30,7 @@ function initials(name: string): string {
 
 function SpotlightCard({ member }: { member: SpotlightMember }) {
   const navigate = useNavigate();
+  const openTrade = useOpenTrade();
   const accent = ACCENTS[member.name] ?? DEFAULT_ACCENT;
 
   return (
@@ -66,13 +68,19 @@ function SpotlightCard({ member }: { member: SpotlightMember }) {
         <>
           <ul className="rows-in mt-4 space-y-2">
             {member.recentTrades.slice(0, 3).map((trade) => (
-              <li key={trade.id} className="flex items-center gap-2 text-sm">
+              <li key={trade.id}>
+                <button
+                  onClick={() => openTrade(trade.id)}
+                  className="flex w-full items-center gap-2 py-0.5 text-left text-sm transition-colors hover:bg-ink-800/40"
+                  title="Open trade detail"
+                >
                 <TypeBadge type={trade.transactionType} />
                 <span className="w-14 truncate font-mono font-semibold text-ink-100">{trade.ticker ?? '—'}</span>
                 <span className="truncate text-xs text-ink-500">{trade.amountRange ?? ''}</span>
                 <span className="ml-auto shrink-0 text-xs text-ink-500">
                   {format(parseISO(trade.transactionDate), 'MMM d, yyyy')}
                 </span>
+                </button>
               </li>
             ))}
           </ul>

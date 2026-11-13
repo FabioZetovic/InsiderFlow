@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import { chamberLabel, type HotTicker, type Trade } from '../types';
 import { Avatar, EmptyState, PartyBadge, TradeFlags, TypeBadge } from './ui';
+import { useOpenTrade } from './TradeDrawer';
 
 function formatDate(value: string | null, pattern = 'MMM d, yyyy'): string {
   if (!value) return '—';
@@ -60,7 +61,10 @@ function TickerPill({ trade, hot, onOpen }: { trade: Trade; hot?: HotTicker; onO
   return (
     <div className="min-w-0 max-w-64">
       <button
-        onClick={() => onOpen(trade.ticker!)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpen(trade.ticker!);
+        }}
         className={`inline-flex items-center gap-1.5 px-2 py-0.5 font-mono text-[13px] font-semibold transition-colors ${tone}`}
         title={
           hot
@@ -121,6 +125,12 @@ export function TradeTable({
   const hotByTicker = new Map(hotTickers.map((h) => [h.ticker, h]));
   const openTicker = (ticker: string) => navigate(`/insiders/ticker/${encodeURIComponent(ticker)}`);
   const openMember = (member: string) => navigate(`/insiders/member/${encodeURIComponent(member)}`);
+  const openTrade = useOpenTrade();
+  /** Links inside a clickable row act on their own, without also opening the trade. */
+  const stop = (fn: () => void) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    fn();
+  };
 
   if (trades.length === 0 && !refreshing) {
     return <EmptyState message="No trades match the current filters." />;
@@ -194,11 +204,17 @@ export function TradeTable({
                       </td>
                     </tr>
                   )}
-                  <tr className="group transition-colors hover:bg-brand-500/[0.06]">
+                  <tr
+                    className="group cursor-pointer transition-colors hover:bg-brand-500/[0.06] focus-visible:bg-brand-500/[0.08] focus-visible:outline-none"
+                    onClick={() => openTrade(trade.id)}
+                    onKeyDown={(e) => e.key === 'Enter' && openTrade(trade.id)}
+                    tabIndex={0}
+                    title="Open trade detail"
+                  >
                     {!hideMember && (
                       <td className="relative py-3 pr-4 pl-6">
                         <span className={`absolute inset-y-2 left-0 w-[3px] ${SIDE_STRIPE[trade.transactionType] ?? 'bg-ink-600'}`} />
-                        <button onClick={() => openMember(trade.member)} className="flex items-center gap-3 text-left">
+                        <button onClick={stop(() => openMember(trade.member))} className="flex items-center gap-3 text-left">
                           <Avatar name={trade.member} party={trade.party} size="sm" />
                           <span className="min-w-0">
                             <span className="flex items-center gap-1.5">
@@ -240,7 +256,7 @@ export function TradeTable({
                     </td>
                     <td className="px-4 py-3">
                       <button
-                        onClick={() => navigate(`/insiders/sector/${encodeURIComponent(trade.sector)}`)}
+                        onClick={stop(() => navigate(`/insiders/sector/${encodeURIComponent(trade.sector)}`))}
                         className="max-w-44 truncate text-left text-xs text-ink-400 transition-colors hover:text-brand-300"
                         title={trade.sector}
                       >
@@ -249,15 +265,21 @@ export function TradeTable({
                     </td>
                     <td className="px-4 py-3 pr-6 text-right">
                       {trade.ptrLink ? (
-                        <a
-                          href={trade.ptrLink}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-block px-2.5 py-1 text-xs font-medium text-ink-500 opacity-60 transition hover:bg-ink-800 hover:text-brand-300 group-hover:opacity-100"
-                          title="Official filing"
-                        >
-                          Filing
-                        </a>
+                        <span className="inline-flex items-center gap-1">
+                          <span className="px-2.5 py-1 text-xs font-semibold text-brand-300 opacity-0 transition group-hover:opacity-100">
+                            Details
+                          </span>
+                          <a
+                            href={trade.ptrLink}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-block px-2.5 py-1 text-xs font-medium text-ink-500 opacity-60 transition hover:bg-ink-800 hover:text-brand-300 group-hover:opacity-100"
+                            title="Official filing"
+                          >
+                            Filing
+                          </a>
+                        </span>
                       ) : (
                         <span className="text-ink-700">—</span>
                       )}
@@ -273,14 +295,18 @@ export function TradeTable({
       {/* Mobile cards */}
       <ul className="rows-in space-y-px md:hidden">
         {trades.map((trade) => (
-          <li key={trade.id} className="relative space-y-2 bg-ink-950/20 py-3 pr-4 pl-5">
+          <li
+            key={trade.id}
+            onClick={() => openTrade(trade.id)}
+            className="relative cursor-pointer space-y-2 bg-ink-950/20 py-3 pr-4 pl-5 active:bg-brand-500/[0.08]"
+          >
             <span className={`absolute inset-y-0 left-0 w-[3px] ${SIDE_STRIPE[trade.transactionType] ?? 'bg-ink-600'}`} />
             <div className="flex items-start justify-between gap-3">
               <TickerPill trade={trade} hot={trade.ticker ? hotByTicker.get(trade.ticker) : undefined} onOpen={openTicker} />
               <TypeBadge type={trade.transactionType} />
             </div>
             {!hideMember && (
-              <button onClick={() => openMember(trade.member)} className="flex items-center gap-2 text-sm text-ink-200">
+              <button onClick={stop(() => openMember(trade.member))} className="flex items-center gap-2 text-sm text-ink-200">
                 <Avatar name={trade.member} party={trade.party} size="sm" />
                 {trade.member}
                 <PartyBadge party={trade.party} />
@@ -297,7 +323,13 @@ export function TradeTable({
                 lagDays={trade.disclosureLagDays}
               />
               {trade.ptrLink && (
-                <a href={trade.ptrLink} target="_blank" rel="noreferrer" className="text-ink-400 hover:text-brand-300">
+                <a
+                  href={trade.ptrLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-ink-400 hover:text-brand-300"
+                >
                   Filing
                 </a>
               )}

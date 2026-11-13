@@ -13,12 +13,20 @@ public class TradeController {
     private final TradeService tradeService;
     private final AnalyticsService analyticsService;
     private final InsightsService insightsService;
+    private final PositionService positionService;
 
     public TradeController(TradeService tradeService, AnalyticsService analyticsService,
-                           InsightsService insightsService) {
+                           InsightsService insightsService, PositionService positionService) {
         this.tradeService = tradeService;
         this.analyticsService = analyticsService;
         this.insightsService = insightsService;
+        this.positionService = positionService;
+    }
+
+    /** One trade in context: entry price, the member's average buy price, and the chart around it. */
+    @GetMapping("/position/{id}")
+    public PositionService.TradePosition getPosition(@PathVariable String id) {
+        return positionService.position(id);
     }
 
     @GetMapping
