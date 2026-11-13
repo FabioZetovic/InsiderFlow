@@ -23,6 +23,12 @@ public class TradeController {
         this.positionService = positionService;
     }
 
+    /** Estimated P&L of a member's buys from the last 12 months (amount-midpoint weighted). */
+    @GetMapping("/members/{member}/pnl")
+    public PositionService.MemberPnl getMemberPnl(@PathVariable String member) {
+        return positionService.memberPnl(member);
+    }
+
     /** One trade in context: entry price, the member's average buy price, and the chart around it. */
     @GetMapping("/position/{id}")
     public PositionService.TradePosition getPosition(@PathVariable String id) {

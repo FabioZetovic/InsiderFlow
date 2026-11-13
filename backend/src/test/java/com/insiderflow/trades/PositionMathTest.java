@@ -45,6 +45,34 @@ class PositionMathTest {
     }
 
     @Test
+    void pnlSummaryWeightsByAmountAndTracksBestWorst() {
+        // $8K up 50% (+$4K) and $32.5K down 10% (-$3.25K); SPY +5% over both windows.
+        var pnl = PositionService.summarize("X", 3, List.of(
+                new PositionService.ScoredBuy("AAA", "2026-01-02", 8_000, 50.0, 5.0),
+                new PositionService.ScoredBuy("BBB", "2026-02-03", 32_500, -10.0, 5.0)));
+        assertEquals(2, pnl.scoredBuys());
+        assertEquals(3, pnl.totalBuys());
+        assertEquals(40_500, pnl.estimatedInvested(), 0.5);
+        assertEquals(750, pnl.estimatedPnl(), 0.5);           // 4000 - 3250
+        assertEquals(1.85, pnl.estimatedPnlPercent(), 0.01);  // 750 / 40500
+        assertEquals(20.0, pnl.avgReturnPercent(), 1e-9);     // (50 - 10) / 2, unweighted
+        assertEquals(15.0, pnl.avgAlphaPercent(), 1e-9);      // (45 - 15) / 2
+        assertEquals(50.0, pnl.winRatePercent(), 1e-9);
+        assertEquals("AAA", pnl.best().ticker());
+        assertEquals("BBB", pnl.worst().ticker());
+        assertEquals(-3_250, pnl.worst().estimatedPnl(), 0.5);
+    }
+
+    @Test
+    void pnlSummaryWithNothingScoredIsEmptyNotZeroPercent() {
+        var pnl = PositionService.summarize("X", 4, List.of());
+        assertEquals(0, pnl.scoredBuys());
+        assertEquals(4, pnl.totalBuys());
+        assertNull(pnl.estimatedPnlPercent());
+        assertNull(pnl.best());
+    }
+
+    @Test
     void tradeIdValidationRejectsJunk() {
         assertTrue(PositionService.VALID_ID.matcher("6730c1f2a9b8e4d3c2b1a090").matches());
         assertFalse(PositionService.VALID_ID.matcher("").matches());

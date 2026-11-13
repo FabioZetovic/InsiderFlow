@@ -135,6 +135,114 @@ public class PositionService {
                 buys, sells, pricedBuys.size(), rows, chart);
     }
 
+    // ---------- Member P&L ----------
+
+    /** Window for P&L: buys from the last 12 months (matches the leaderboard). */
+    private static final int PNL_WINDOW_DAYS = 365;
+    /** Guard against pathological members with thousands of distinct tickers. */
+    private static final int PNL_MAX_TICKERS = 400;
+
+    public record PnlTrade(String ticker, String transactionDate, double returnPercent, double estimatedPnl) {
+    }
+
+    public record MemberPnl(
+            String member,
+            /** Buys in the window that had a price on the trade date (the ones scored). */
+            int scoredBuys,
+            int totalBuys,
+            /** Sum of disclosed amount midpoints of the scored buys. */
+            double estimatedInvested,
+            /** Sum over scored buys of amount midpoint x return. */
+            double estimatedPnl,
+            Double estimatedPnlPercent,
+            Double avgReturnPercent,
+            /** Average return in excess of SPY over each buy's holding period. */
+            Double avgAlphaPercent,
+            /** Share of scored buys that are up. */
+            Double winRatePercent,
+            PnlTrade best,
+            PnlTrade worst) {
+    }
+
+    /** One scored buy: amount weight, return %, and SPY return % over the same window (nullable). */
+    record ScoredBuy(String ticker, String date, double amount, double returnPercent, Double spyReturnPercent) {
+    }
+
+    public MemberPnl memberPnl(String member) {
+        if (member == null || member.isBlank() || member.length() > 120) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid member");
+        }
+        LocalDate cutoff = LocalDate.now().minusDays(PNL_WINDOW_DAYS);
+        List<Trade> buys = mongoTemplate.find(
+                new Query(where("member").is(member).and("transactionType").is("BUY")
+                        .and("ticker").ne(null).and("transactionDate").gte(cutoff)),
+                Trade.class);
+
+        NavigableMap<LocalDate, Double> spy = priceHistory.history("SPY");
+        java.util.Map<String, NavigableMap<LocalDate, Double>> seriesCache = new java.util.HashMap<>();
+        List<ScoredBuy> scored = new ArrayList<>();
+        for (Trade t : buys) {
+            String ticker = t.getTicker().trim().toUpperCase();
+            if (!AnalyticsService.VALID_TICKER.matcher(ticker).matches()) {
+                continue;
+            }
+            if (!seriesCache.containsKey(ticker) && seriesCache.size() >= PNL_MAX_TICKERS) {
+                continue;
+            }
+            NavigableMap<LocalDate, Double> s = seriesCache.computeIfAbsent(ticker, priceHistory::history);
+            Double entry = closeOnOrBefore(s, t.getTransactionDate());
+            if (entry == null || entry == 0 || s.isEmpty()) {
+                continue;
+            }
+            double ret = percentChange(entry, s.lastEntry().getValue());
+            Double spyEntry = closeOnOrBefore(spy, t.getTransactionDate());
+            Double spyRet = spy.isEmpty() ? null : percentChange(spyEntry, spy.lastEntry().getValue());
+            scored.add(new ScoredBuy(ticker, t.getTransactionDate().toString(), weightOf(t), ret, spyRet));
+        }
+        return summarize(member, buys.size(), scored);
+    }
+
+    /** Pure aggregation of scored buys into the P&L summary (unit-tested). */
+    static MemberPnl summarize(String member, int totalBuys, List<ScoredBuy> scored) {
+        if (scored.isEmpty()) {
+            return new MemberPnl(member, 0, totalBuys, 0, 0, null, null, null, null, null, null);
+        }
+        double invested = 0;
+        double pnl = 0;
+        double sumRet = 0;
+        double sumAlpha = 0;
+        int alphaCount = 0;
+        int wins = 0;
+        ScoredBuy best = null;
+        ScoredBuy worst = null;
+        for (ScoredBuy b : scored) {
+            invested += b.amount();
+            pnl += b.amount() * b.returnPercent() / 100.0;
+            sumRet += b.returnPercent();
+            if (b.spyReturnPercent() != null) {
+                sumAlpha += b.returnPercent() - b.spyReturnPercent();
+                alphaCount++;
+            }
+            if (b.returnPercent() > 0) {
+                wins++;
+            }
+            if (best == null || b.returnPercent() > best.returnPercent()) best = b;
+            if (worst == null || b.returnPercent() < worst.returnPercent()) worst = b;
+        }
+        int n = scored.size();
+        return new MemberPnl(member, n, totalBuys,
+                Math.round(invested), Math.round(pnl),
+                round2(invested == 0 ? null : pnl / invested * 100.0),
+                round2(sumRet / n),
+                alphaCount == 0 ? null : round2(sumAlpha / alphaCount),
+                round2(wins * 100.0 / n),
+                toPnlTrade(best), toPnlTrade(worst));
+    }
+
+    private static PnlTrade toPnlTrade(ScoredBuy b) {
+        return new PnlTrade(b.ticker(), b.date(), round2(b.returnPercent()), Math.round(b.amount() * b.returnPercent() / 100.0));
+    }
+
     // ---------- pure helpers (unit-tested) ----------
 
     /** Weighted mean of {value, weight} pairs; null when there is nothing to average. */

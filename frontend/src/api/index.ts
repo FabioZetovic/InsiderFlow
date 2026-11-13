@@ -1,5 +1,6 @@
 import { client } from './client';
 import type {
+  MemberPnl,
   TradePosition,
   AppStatus,
   AuthResponse,
@@ -203,5 +204,10 @@ export async function toggleWatch(type: 'member' | 'ticker', value: string): Pro
 
 export async function getFeed(page = 0, size = 50): Promise<PagedResponse<Trade>> {
   const { data } = await client.get<PagedResponse<Trade>>('/watchlist/feed', { params: { page, size } });
+  return data;
+}
+
+export async function getMemberPnl(member: string): Promise<MemberPnl> {
+  const { data } = await client.get<MemberPnl>(`/trades/members/${encodeURIComponent(member)}/pnl`);
   return data;
 }

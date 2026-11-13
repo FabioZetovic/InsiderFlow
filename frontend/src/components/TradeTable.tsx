@@ -59,7 +59,7 @@ function TickerPill({ trade, hot, onOpen }: { trade: Trade; hot?: HotTicker; onO
       : 'bg-ink-600/40 text-ink-100 hover:bg-ink-600/60'
     : 'bg-ink-800/80 text-ink-50 hover:bg-brand-500/20 hover:text-brand-200';
   return (
-    <div className="min-w-0 max-w-64">
+    <div className="min-w-0 max-w-40 @4xl:max-w-64">
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -145,8 +145,8 @@ export function TradeTable({
     { label: 'Side', field: 'transactionType' },
     { label: 'Amount', field: 'amountMid' },
     { label: 'Traded', field: 'transactionDate' },
-    { label: 'Sector', field: 'sector' },
-    { label: '', className: 'text-right' },
+    // Sector only when the table itself is wide enough (container query, not viewport).
+    { label: 'Sector', field: 'sector', className: 'hidden @5xl:table-cell pr-6' },
   ];
 
   const headerCell = (h: HeaderDef, i: number) => {
@@ -158,7 +158,7 @@ export function TradeTable({
       onSortChange!(`${h.field},${nextDir}`);
     };
     return (
-      <th key={h.label || i} className={`px-4 pt-5 pb-3 text-[10px] font-semibold uppercase tracking-[0.14em] ${i === 0 ? 'pl-6' : ''} ${h.className ?? ''}`}>
+      <th key={h.label || i} className={`px-3 pt-5 pb-3 text-[10px] @4xl:px-4 font-semibold uppercase tracking-[0.14em] ${i === 0 ? 'pl-6' : ''} ${h.className ?? ''}`}>
         {sortable ? (
           <button
             onClick={toggle}
@@ -180,8 +180,15 @@ export function TradeTable({
 
   return (
     <div className={`transition-opacity duration-300 ${refreshing ? 'pointer-events-none opacity-50' : ''}`}>
+      <p className="flex items-center gap-2 px-6 pt-4 text-xs text-ink-400">
+        <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
+        <span>
+          <span className="font-semibold text-brand-300">Click any trade</span> to see the entry price, their average buy price and a
+          chart of where they bought and sold.
+        </span>
+      </p>
       {/* Desktop table */}
-      <div className="hidden overflow-x-auto md:block">
+      <div className="@container hidden overflow-x-auto md:block">
         <table className="rows-in w-full text-sm">
           <thead>
             <tr className="text-left text-ink-500">{headers.map(headerCell)}</tr>
@@ -212,7 +219,7 @@ export function TradeTable({
                     title="Open trade detail"
                   >
                     {!hideMember && (
-                      <td className="relative py-3 pr-4 pl-6">
+                      <td className="relative py-3 pr-3 pl-6 @4xl:pr-4">
                         <span className={`absolute inset-y-2 left-0 w-[3px] ${SIDE_STRIPE[trade.transactionType] ?? 'bg-ink-600'}`} />
                         <button onClick={stop(() => openMember(trade.member))} className="flex items-center gap-3 text-left">
                           <Avatar name={trade.member} party={trade.party} size="sm" />
@@ -231,11 +238,11 @@ export function TradeTable({
                         </button>
                       </td>
                     )}
-                    <td className={`relative py-3 pr-4 ${hideMember ? 'pl-6' : 'pl-4'}`}>
+                    <td className={`relative py-3 pr-3 @4xl:pr-4 ${hideMember ? "pl-6" : "pl-3 @4xl:pl-4"}`}>
                       {hideMember && <span className={`absolute inset-y-2 left-0 w-[3px] ${SIDE_STRIPE[trade.transactionType] ?? 'bg-ink-600'}`} />}
                       <TickerPill trade={trade} hot={trade.ticker ? hotByTicker.get(trade.ticker) : undefined} onOpen={openTicker} />
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-3 @4xl:px-4">
                       <TypeBadge type={trade.transactionType} />
                       <div className="mt-1.5">
                         <TradeFlags
@@ -246,15 +253,15 @@ export function TradeTable({
                         />
                       </div>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="px-3 py-3 @4xl:px-4 @4xl:whitespace-nowrap">
                       <span className="font-medium text-ink-100">{trade.amountRange ?? '—'}</span>
                       <SizeMeter mid={trade.amountMid} />
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="py-3 pr-6 pl-3 whitespace-nowrap @4xl:pl-4 @5xl:pr-4">
                       <span className="text-ink-200">{formatDate(trade.transactionDate)}</span>
                       <FiledLag trade={trade} />
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="hidden px-4 py-3 pr-6 @5xl:table-cell">
                       <button
                         onClick={stop(() => navigate(`/insiders/sector/${encodeURIComponent(trade.sector)}`))}
                         className="max-w-44 truncate text-left text-xs text-ink-400 transition-colors hover:text-brand-300"
@@ -262,27 +269,6 @@ export function TradeTable({
                       >
                         {trade.sector}
                       </button>
-                    </td>
-                    <td className="px-4 py-3 pr-6 text-right">
-                      {trade.ptrLink ? (
-                        <span className="inline-flex items-center gap-1">
-                          <span className="px-2.5 py-1 text-xs font-semibold text-brand-300 opacity-0 transition group-hover:opacity-100">
-                            Details
-                          </span>
-                          <a
-                            href={trade.ptrLink}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="inline-block px-2.5 py-1 text-xs font-medium text-ink-500 opacity-60 transition hover:bg-ink-800 hover:text-brand-300 group-hover:opacity-100"
-                            title="Official filing"
-                          >
-                            Filing
-                          </a>
-                        </span>
-                      ) : (
-                        <span className="text-ink-700">—</span>
-                      )}
                     </td>
                   </tr>
                 </Fragment>

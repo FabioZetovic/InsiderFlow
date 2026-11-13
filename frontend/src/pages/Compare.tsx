@@ -1,12 +1,92 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { compareMembers, getMembers } from '../api';
-import type { MemberComparison, MemberStats } from '../types';
-import { Avatar, Card, ErrorState, formatMoney, PageHeader, PartyBadge, SearchField, Skeleton } from '../components/ui';
+import { compareMembers, getMemberPnl, getMembers } from '../api';
+import type { MemberComparison, MemberPnl, MemberStats } from '../types';
+import { Avatar, Card, CountUp, ErrorState, formatMoney, PageHeader, PartyBadge, SearchField, Skeleton } from '../components/ui';
 import { chamberLabel } from '../types';
 
 const PIE_COLORS = ['#7472f8', '#22b5d2', '#f6bd4f', '#3fd38c', '#f4707a', '#b1b4ff', '#93e4f3', '#ffd78f', '#86e3b4', '#ffa3aa', '#6b7592'];
+
+const signed = (n: number) => `${n >= 0 ? '+' : '-'}${formatMoney(Math.abs(n))}`;
+const pct = (n: number | null | undefined) => (n == null ? '—' : `${n >= 0 ? '+' : ''}${n.toFixed(2)}%`);
+const tone = (n: number | null | undefined) => (n == null ? 'text-ink-300' : n >= 0 ? 'text-up-400' : 'text-down-400');
+
+/** The P&L block at the top of each comparison card. */
+function PnlPanel({ pnl, leader }: { pnl: MemberPnl | null | undefined; leader: boolean }) {
+  if (pnl === undefined) {
+    return (
+      <div className="space-y-2 px-5 pb-5">
+        <Skeleton className="h-14 w-full" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+    );
+  }
+  if (pnl === null || pnl.scoredBuys === 0) {
+    return (
+      <div className="mx-5 mb-5 bg-ink-950/50 px-4 py-4 text-xs text-ink-500">
+        No priced buys in the last 12 months, so there is no P&amp;L to estimate.
+      </div>
+    );
+  }
+  const win = pnl.winRatePercent ?? 0;
+  return (
+    <div className={`mx-5 mb-5 p-4 ${leader ? 'bg-gradient-to-br from-accent-500/15 to-ink-950/50' : 'bg-ink-950/50'}`}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-500">Est. P&amp;L, last 12 months</div>
+        {leader && <span className="bg-accent-500 px-1.5 py-0.5 text-[10px] font-bold text-ink-950">BEST P&amp;L</span>}
+      </div>
+      <div className={`mt-1 text-3xl font-bold tabular-nums ${tone(pnl.estimatedPnl)}`}>
+        <CountUp value={pnl.estimatedPnl} format={(n) => signed(n)} />
+      </div>
+      <div className="text-xs text-ink-400">
+        <span className={tone(pnl.estimatedPnlPercent)}>{pct(pnl.estimatedPnlPercent)}</span> on ≈{formatMoney(pnl.estimatedInvested)} bought
+      </div>
+
+      <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+        <div>
+          <div className="text-ink-500">Avg return</div>
+          <div className={`font-semibold ${tone(pnl.avgReturnPercent)}`}>{pct(pnl.avgReturnPercent)}</div>
+        </div>
+        <div>
+          <div className="text-ink-500">Alpha vs S&amp;P</div>
+          <div className={`font-semibold ${tone(pnl.avgAlphaPercent)}`}>{pct(pnl.avgAlphaPercent)}</div>
+        </div>
+        <div>
+          <div className="text-ink-500">Win rate</div>
+          <div className="font-semibold text-ink-100">{win.toFixed(0)}%</div>
+        </div>
+      </div>
+      <div className="mt-2 flex h-1.5 bg-down-500/60" title={`${win.toFixed(0)}% of scored buys are up`}>
+        <span className="bar-grow h-full bg-up-500" style={{ width: `${win}%` }} />
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+        {pnl.best && (
+          <div className="bg-up-500/10 px-2.5 py-2">
+            <div className="text-ink-500">Best buy</div>
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="font-mono font-semibold text-ink-50">{pnl.best.ticker}</span>
+              <span className="font-semibold text-up-400">{pct(pnl.best.returnPercent)}</span>
+            </div>
+          </div>
+        )}
+        {pnl.worst && (
+          <div className="bg-down-500/10 px-2.5 py-2">
+            <div className="text-ink-500">Worst buy</div>
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="font-mono font-semibold text-ink-50">{pnl.worst.ticker}</span>
+              <span className={`font-semibold ${tone(pnl.worst.returnPercent)}`}>{pct(pnl.worst.returnPercent)}</span>
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="mt-2 text-[11px] text-ink-500">
+        {pnl.scoredBuys} of {pnl.totalBuys} buys priced
+      </div>
+    </div>
+  );
+}
 
 export function Compare() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,6 +114,29 @@ export function Compare() {
       .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [searchParams]);
+
+  // P&L per member loads separately (it prices every buy), so the cards appear first.
+  // undefined = loading, null = failed.
+  const [pnl, setPnl] = useState<Record<string, MemberPnl | null>>({});
+  useEffect(() => {
+    let cancelled = false;
+    for (const m of selected) {
+      if (m in pnl) continue;
+      getMemberPnl(m)
+        .then((p) => !cancelled && setPnl((prev) => ({ ...prev, [m]: p })))
+        .catch(() => !cancelled && setPnl((prev) => ({ ...prev, [m]: null })));
+    }
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected.join('|')]);
+
+  const leader = useMemo(() => {
+    const scored = selected.map((m) => pnl[m]).filter((p): p is MemberPnl => !!p && p.scoredBuys > 0);
+    if (scored.length < 2) return null;
+    return scored.reduce((a, b) => (b.estimatedPnl > a.estimatedPnl ? b : a)).member;
+  }, [pnl, selected]);
 
   const setSelected = (members: string[]) => {
     const next = new URLSearchParams();
@@ -142,18 +245,26 @@ export function Compare() {
       ) : error ? (
         <ErrorState message="Failed to load comparison." />
       ) : data && data.members.length > 0 ? (
+        <>
         <div className="stagger grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {data.members.map((m) => (
             <Card key={m.member} className="lift">
-              <div className="p-4">
-                <div className="flex items-center gap-1.5">
-                  <h2 className="font-semibold text-ink-100">{m.member}</h2>
-                  <PartyBadge party={m.party} />
+              <div className="flex items-center gap-3 p-5">
+                <Avatar name={m.member} party={m.party} size="lg" />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <h2 className="truncate text-lg font-semibold text-ink-50">{m.member}</h2>
+                    <PartyBadge party={m.party} />
+                  </div>
+                  <p className="text-xs text-ink-500">
+                    {chamberLabel(m.chamber)}
+                    {m.state ? ` · ${m.state}` : ''}
+                  </p>
                 </div>
-                <p className="text-xs text-ink-500">
-                  {chamberLabel(m.chamber)}
-                  {m.state ? ` · ${m.state}` : ''}
-                </p>
+              </div>
+              <PnlPanel pnl={m.member in pnl ? pnl[m.member] : undefined} leader={leader === m.member} />
+              <div className="px-5">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-500">Activity, all time</div>
                 <div className="mt-3 grid grid-cols-3 gap-2 text-center">
                   <div>
                     <div className="text-lg font-bold text-ink-100">{m.tradeCount}</div>
@@ -192,6 +303,12 @@ export function Compare() {
             </Card>
           ))}
         </div>
+        <p className="mt-4 max-w-4xl text-[11px] leading-relaxed text-ink-500">
+          Estimated P&amp;L covers buys from the last 12 months: each buy's close on the trade date versus the latest close,
+          applied to the midpoint of its disclosed dollar range. Disclosures give ranges, not share counts, and sells are not
+          netted out, so treat it as an indication of how their picks performed rather than an exact account balance.
+        </p>
+        </>
       ) : (
         <p className="py-12 text-center text-sm text-ink-500">Add members above to compare them.</p>
       )}

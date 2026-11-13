@@ -399,3 +399,27 @@ export interface TradePosition {
   memberTrades: PositionTrade[];
   priceHistory: PricePoint[];
 }
+
+// ---------- Member P&L (estimated) ----------
+
+export interface PnlTrade {
+  ticker: string;
+  transactionDate: string;
+  returnPercent: number;
+  estimatedPnl: number;
+}
+
+/** Estimated P&L of a member's buys from the last 12 months, weighted by disclosed amount midpoints. */
+export interface MemberPnl {
+  member: string;
+  scoredBuys: number;
+  totalBuys: number;
+  estimatedInvested: number;
+  estimatedPnl: number;
+  estimatedPnlPercent: number | null;
+  avgReturnPercent: number | null;
+  avgAlphaPercent: number | null;
+  winRatePercent: number | null;
+  best: PnlTrade | null;
+  worst: PnlTrade | null;
+}
