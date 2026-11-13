@@ -177,6 +177,13 @@ Environment: no system Maven (wrapper used), Java 26 JDK (targets 17), Node 22, 
 
 ## Changelog
 
+### 2026-11-13 — Trades and Leaderboard redesign
+- **Filters** (`FilterBar`): a labelled control panel with a search field, a member picker (avatars, party, state, trade counts), a sector picker (with relative-volume bars), a date picker (quick ranges plus from/to), sliding segmented controls for chamber and side, and removable filter chips with "Reset all".
+- **Trade table** (`TradeTable`): grouped by trading day when sorted by date, a buy/sell side stripe, member avatars, ticker pills (amber HOT for heavily traded tickers), a 5-step trade-size meter, "filed N days later" (amber when late), and a hover-revealed filing link. A results bar shows the matching count and a flag legend. Pagination shows "Showing X–Y of N" with numbered pages.
+- **Corporate trades**: same filter panel (debounced ticker search, All / Buys / Sells / Grants). The table shows insider avatars with Officer / Director / 10% owner tags, the company name, shares with price per share, and value with a relative bar.
+- **Leaderboard**: rank by average return, alpha or scored buys, filter by chamber, and search members (all client-side). It has a top-3 podium with counting headline numbers, and a ranked table with medal ranks and diverging gain/loss bars for return and alpha. A methodology note describes the backend calculation.
+- New `ui.tsx` primitives: `Avatar`, `Segmented`, `SearchField`, `FieldLabel`.
+
 ### 2026-11-12 — Corporate tab renamed to Trades
 - The tab is now **Trades** at `/trades` (page `pages/Trades.tsx`), since it holds both the congress list and corporate insiders. `/corporate` redirects to `/trades` and keeps its query string, so old links like `/corporate?view=corporate` still work.
 

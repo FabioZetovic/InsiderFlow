@@ -5,7 +5,7 @@ import type { Chamber, HotTicker, MemberStats, PagedResponse, SectorStats, Trade
 import { FilterBar } from './FilterBar';
 import { TradeTable } from './TradeTable';
 import { Pagination } from './Pagination';
-import { Card, ErrorState, TableSkeleton } from './ui';
+import { Card, CountUp, ErrorState, TableSkeleton } from './ui';
 
 /**
  * Every congressional and presidential trade: filter bar, sortable table, pagination.
@@ -91,7 +91,7 @@ export function AllTrades() {
 
   return (
     <section>
-      <div className="mb-3">
+      <div className="mb-px">
         <FilterBar
           members={members}
           sectors={sectors}
@@ -106,6 +106,22 @@ export function AllTrades() {
         />
       </div>
       <Card>
+        <div className="flex flex-wrap items-center justify-between gap-3 px-6 pt-5">
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-ink-50">
+              {trades ? <CountUp value={trades.totalElements} duration={700} /> : '—'}
+            </span>
+            <span className="text-sm text-ink-400">matching trades</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-ink-500">
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-[3px] bg-up-500" />Buy</span>
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-[3px] bg-down-500" />Sell</span>
+            <span><span className="mr-1 bg-accent-500/15 px-1 font-semibold text-accent-300">HOT</span>heavily traded lately</span>
+            <span><span className="mr-1 bg-accent-500/15 px-1 font-semibold text-accent-300">LATE</span>filed after 45 days</span>
+            <span><span className="mr-1 bg-brand-500/15 px-1 font-semibold text-brand-300">COMMITTEE</span>oversees the sector</span>
+            <span><span className="mr-1 bg-secondary-500/15 px-1 font-semibold text-secondary-300">EARNINGS</span>just before a report</span>
+          </div>
+        </div>
         {error ? (
           <ErrorState message={error} onRetry={loadTrades} />
         ) : trades ? (

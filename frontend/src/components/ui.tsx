@@ -224,6 +224,115 @@ export function Card({
   );
 }
 
+const AVATAR_TINT: Record<string, string> = {
+  D: 'bg-blue-500/20 text-blue-300',
+  R: 'bg-down-500/20 text-down-300',
+  I: 'bg-ink-600/40 text-ink-200',
+};
+
+function initialsOf(name: string): string {
+  const parts = name.replace(/[^A-Za-z\s.-]/g, '').split(/\s+/).filter(Boolean);
+  return ((parts[0]?.[0] ?? '') + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase();
+}
+
+/** Round initials badge, tinted by party (or brand when there is none). */
+export function Avatar({
+  name,
+  party,
+  size = 'md',
+  tint,
+}: {
+  name: string;
+  party?: Party | null;
+  size?: 'sm' | 'md' | 'lg';
+  tint?: string;
+}) {
+  const dims = size === 'sm' ? 'h-7 w-7 text-[10px]' : size === 'lg' ? 'h-12 w-12 text-sm' : 'h-9 w-9 text-xs';
+  const color = tint ?? AVATAR_TINT[partyInitial(party) ?? ''] ?? 'bg-brand-500/20 text-brand-300';
+  return (
+    <span className={`flex shrink-0 items-center justify-center rounded-full font-bold ${dims} ${color}`}>
+      {initialsOf(name)}
+    </span>
+  );
+}
+
+/** Segmented control with a sliding active pill. `value === ''` selects the first ("All") option. */
+export function Segmented<T extends string>({
+  options,
+  value,
+  onChange,
+  size = 'md',
+}: {
+  options: { label: string; value: T | '' }[];
+  value: T | '';
+  onChange: (value: T | '') => void;
+  size?: 'sm' | 'md';
+}) {
+  const index = Math.max(0, options.findIndex((o) => o.value === value));
+  const pad = size === 'sm' ? 'px-3 py-1 text-xs' : 'px-3.5 py-1.5 text-[13px]';
+  return (
+    <div className="relative inline-grid bg-ink-950/70 p-1" style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}>
+      <span
+        aria-hidden
+        className="absolute top-1 bottom-1 left-1 bg-brand-600 shadow-md shadow-brand-900/40 transition-transform duration-300 ease-out"
+        style={{ width: `calc((100% - 8px) / ${options.length})`, transform: `translateX(${index * 100}%)` }}
+      />
+      {options.map((o) => (
+        <button
+          key={o.value || 'all'}
+          onClick={() => onChange(o.value)}
+          className={`relative z-10 whitespace-nowrap font-medium transition-colors duration-300 ${pad} ${
+            o.value === value ? 'text-white' : 'text-ink-400 hover:text-ink-100'
+          }`}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** Text field with a leading search glyph and an inline clear action. */
+export function SearchField({
+  value,
+  onChange,
+  placeholder,
+  className = '',
+  onEnter,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  className?: string;
+  onEnter?: () => void;
+}) {
+  return (
+    <label className={`group flex items-center gap-2.5 bg-ink-950/70 px-3.5 py-2.5 ring-1 ring-transparent transition focus-within:bg-ink-950 focus-within:ring-brand-500/60 ${className}`}>
+      <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0 text-ink-500 group-focus-within:text-brand-400" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="8.5" cy="8.5" r="5.5" />
+        <path d="M13 13l4 4" strokeLinecap="round" />
+      </svg>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && onEnter?.()}
+        placeholder={placeholder}
+        className="w-full min-w-0 bg-transparent text-sm text-ink-100 placeholder:text-ink-600 focus:outline-none"
+      />
+      {value && (
+        <button onClick={() => onChange('')} className="shrink-0 text-xs text-ink-500 hover:text-ink-200">
+          Clear
+        </button>
+      )}
+    </label>
+  );
+}
+
+/** Small uppercase caption above a control. */
+export function FieldLabel({ children }: { children: React.ReactNode }) {
+  return <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-500">{children}</span>;
+}
+
 /** Big number + caption used in page headers. */
 export function Stat({ value, label, tone = 'text-ink-50' }: { value: React.ReactNode; label: string; tone?: string }) {
   return (
